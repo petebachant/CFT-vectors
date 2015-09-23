@@ -46,10 +46,25 @@ def make_foil(naca="0020", c=100, xy=(350, 350), angle=np.pi/2, **kwargs):
 
 def make_arrow(xy_start, xy_end, label=""):
     """Make an arrow."""
+    x_start, y_start = xy_start
+    x_end, y_end = xy_end
+    angle = np.arctan2(y_end - y_start, x_end - x_start)
+    print(np.rad2deg(angle))
     line = gz.polyline((xy_start, xy_end), stroke_width=2)
+    
+    head_angle = np.deg2rad(30.0)
+    
+    
     head_point2 = (xy_end[0] + 50, xy_end[1] + 150)
     head = gz.polyline((xy_end, head_point2), stroke_width=2, close_path=False)
     return gz.Group((line, head))
+    
+    
+def plot_surface(surface):
+    """Plot a Gizeh Surface with matplotlib."""
+    plt.figure(figsize=(6, 6))
+    plt.axis("off")
+    plt.imshow(surface.get_npimage())
 
 
 def main():
@@ -65,6 +80,8 @@ def main():
     arrow = make_arrow((100, 100), (300, 300))
     arrow.draw(canvas)
     canvas.write_to_png("cft-vectors.png")
+    
+    plot_surface(canvas)
 
 
 if __name__ == "__main__":
