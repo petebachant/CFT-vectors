@@ -34,17 +34,36 @@ def test_gen_naca_points():
     plt.show()
 
 
-def draw_foil(naca="0020", c=100):
-    """Draw NACA 0020 foil."""
+def make_foil(naca="0020", c=100, xy=(350, 350), angle=np.pi/2, **kwargs):
+    """Make a NACA foil."""
     points = gen_naca_points(naca, c)
-    line = gz.polyline(points, close_path=False, stroke_width=2, xy=(300, 300))
+    kwargs["xy"] = xy
+    kwargs["angle"] = angle
+    line = gz.polyline(points, close_path=True, stroke_width=2,
+                       fill=(0.6, 0.6, 0.6), **kwargs)
     return line
 
 
+def make_arrow(xy_start, xy_end, label=""):
+    """Make an arrow."""
+    line = gz.polyline((xy_start, xy_end), stroke_width=2)
+    head_point2 = (xy_end[0] + 50, xy_end[1] + 150)
+    head = gz.polyline((xy_end, head_point2), stroke_width=2, close_path=False)
+    return gz.Group((line, head))
+
+
 def main():
-    canvas = gz.Surface(width=700, height=700)
-    foil = draw_foil()
+    c = 100
+    r = 200
+    canvas = gz.Surface(width=700, height=700, bg_color=(1, 1, 1))
+    origin = canvas.width/2, canvas.height/2
+    origin_x, origin_y = origin
+    radius = gz.polyline([origin, (origin_x + r, origin_y)], stroke_width=2)
+    radius.draw(canvas)
+    foil = make_foil(c=c, xy=(origin_x + r, origin_y - c/4))
     foil.draw(canvas)
+    arrow = make_arrow((100, 100), (300, 300))
+    arrow.draw(canvas)
     canvas.write_to_png("cft-vectors.png")
 
 
