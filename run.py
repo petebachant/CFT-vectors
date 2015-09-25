@@ -9,6 +9,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def mag(v):
+    """
+    Return magnitude of 2-D vector (input as a tuple, list, or NumPy array).
+    """
+    return np.sqrt(v[0]**2 + v[1]**2)
+
+
 def gen_naca_points(naca="0020", c=100, npoints=100):
     """Generate points for a NACA foil."""
     x = np.linspace(0, 1, npoints)*c
