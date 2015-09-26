@@ -98,6 +98,8 @@ def plot_velocities(ax, theta_deg=0.0, tsr=2.0, label=False):
     blue = "#4C72B0"
     green = "#55A868"
     dark_gray = (0.3, 0.3, 0.3)
+    red = "#C44E52"
+    purple = "#8172B2"
     
     # Make blade velocity vector
     x1, y1 = rotate((0.5, tsr*u_infty), np.deg2rad(theta_deg))
