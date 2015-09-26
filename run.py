@@ -94,28 +94,34 @@ def plot_velocities(ax, theta_deg=0.0, tsr=2.0, label=False):
     head_length = 0.12
     linewidth = 1.5
     
-    # Define some colors from the Seaborn deep palette
+    # Define some colors (some from the Seaborn deep palette)
     blue = "#4C72B0"
     green = "#55A868"
+    dark_gray = (0.3, 0.3, 0.3)
     
     # Make blade velocity vector
     x1, y1 = rotate((0.5, tsr*u_infty), np.deg2rad(theta_deg))
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
+    blade_vel = np.array((dx, dy))
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
-             length_includes_head=True, color=blue, linewidth=linewidth)
+             length_includes_head=True, color=dark_gray, linewidth=linewidth)
     if label:
         ax.text(x1 + 0.01, y1 + 0.05*np.sign(y1), r"$\omega r$")
     
     # Make free stream velocity vector
     y1 += u_infty
     ax.arrow(x1, y1, 0, -u_infty, head_width=head_width, 
-             head_length=head_length, length_includes_head=True, color="k",
-             linewidth=linewidth)
+             head_length=head_length, length_includes_head=True, 
+             color=blue, linewidth=linewidth)
+    u_infty = np.array((0, -u_infty))
              
     # Make relative velocity vector
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
+    rel_vel = u_infty + blade_vel
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
              length_includes_head=True, color=green, linewidth=linewidth)
+             
+    return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
 
 def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
@@ -125,7 +131,8 @@ def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
     plot_foil(ax, c=0.3, theta_deg=theta_deg)
     plot_radius(ax, theta_deg)
     plot_center(ax)
-    plot_velocities(ax, theta_deg, tsr, label=label)
+    vels = plot_velocities(ax, theta_deg, tsr, label=label)
+    print(vels)
 
     # Figure formatting    
     ax.set_xlim((-1, 1))
@@ -139,4 +146,4 @@ def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
 
 if __name__ == "__main__":
     plt.rcParams["font.size"] = 18
-    plot_diagram(220)
+    plot_diagram(120)
