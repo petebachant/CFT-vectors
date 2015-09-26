@@ -57,7 +57,7 @@ def plot_radius(ax, theta_deg=0):
     r = 0.495
     theta_rad = np.deg2rad(theta_deg)
     x2, y2 = r*np.cos(theta_rad), r*np.sin(theta_rad)
-    ax.plot((0, x2), (0, y2), "k", linewidth=2)
+    ax.plot((0, x2), (0, y2), "gray", linewidth=2)
 
 
 def make_naca_path(c=0.3, theta_deg=0.0):
@@ -73,14 +73,15 @@ def make_naca_path(c=0.3, theta_deg=0.0):
 def plot_foil(ax, c=0.3, theta_deg=0.0):
     """Plot the foil shape using a matplotlib patch."""
     p = matplotlib.patches.PathPatch(make_naca_path(c, theta_deg), 
-                                     facecolor="gray", linewidth=1)
+                                     facecolor="gray", linewidth=1,
+                                     edgecolor="gray")
     ax.add_patch(p)
 
 
 def plot_velocities(ax, theta_deg=0.0, tsr=2.0):
     """Plot blade velocity, free stream velocity, and relative velocity."""
     r = 0.5
-    u_infty = 0.25
+    u_infty = 0.3
     theta_rad = np.deg2rad(theta_deg)
     blade_xy = r*np.cos(theta_rad), r*np.sin(theta_rad)
     head_width = 0.05
@@ -89,9 +90,7 @@ def plot_velocities(ax, theta_deg=0.0, tsr=2.0):
     
     # Make blade velocity vector
     x1, y1 = rotate((0.5, tsr*u_infty), np.deg2rad(theta_deg))
-    print(blade_xy)
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
-    print(dx, dy)
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
              length_includes_head=True, color="black", linewidth=linewidth)
     ax.text(x1 + 0.01, y1 + 0.05*np.sign(y1), r"$\omega r$")
@@ -101,6 +100,11 @@ def plot_velocities(ax, theta_deg=0.0, tsr=2.0):
     ax.arrow(x1, y1, 0, -u_infty, head_width=head_width, 
              head_length=head_length, length_includes_head=True, color="blue",
              linewidth=linewidth)
+             
+    # Make relative velocity vector
+    dx, dy = np.array(blade_xy) - np.array((x1, y1))
+    ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
+             length_includes_head=True, color="green", linewidth=linewidth)
 
 
 def plot_diagram(theta_deg=0.0, tsr=2.0, save=False):
@@ -123,4 +127,4 @@ def plot_diagram(theta_deg=0.0, tsr=2.0, save=False):
 
 if __name__ == "__main__":
     plt.rcParams["font.size"] = 18
-    plot_diagram(90)
+    plot_diagram(300)
