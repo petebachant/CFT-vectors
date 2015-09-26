@@ -58,6 +58,12 @@ def plot_radius(ax, theta_deg=0):
     theta_rad = np.deg2rad(theta_deg)
     x2, y2 = r*np.cos(theta_rad), r*np.sin(theta_rad)
     ax.plot((0, x2), (0, y2), "gray", linewidth=2)
+    
+
+def plot_center(ax, length=0.07, linewidth=1.75):
+    """Plot centermark at origin."""
+    ax.plot((0, 0), (-length/2, length/2), lw=linewidth, color="black")
+    ax.plot((-length/2, length/2), (0, 0), lw=linewidth, color="black")
 
 
 def make_naca_path(c=0.3, theta_deg=0.0):
@@ -118,6 +124,7 @@ def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
     
     plot_foil(ax, c=0.3, theta_deg=theta_deg)
     plot_radius(ax, theta_deg)
+    plot_center(ax)
     plot_velocities(ax, theta_deg, tsr, label=label)
 
     # Figure formatting    
