@@ -78,42 +78,47 @@ def plot_foil(ax, c=0.3, theta_deg=0.0):
     ax.add_patch(p)
 
 
-def plot_velocities(ax, theta_deg=0.0, tsr=2.0):
+def plot_velocities(ax, theta_deg=0.0, tsr=2.0, label=False):
     """Plot blade velocity, free stream velocity, and relative velocity."""
     r = 0.5
-    u_infty = 0.3
+    u_infty = 0.27
     theta_rad = np.deg2rad(theta_deg)
     blade_xy = r*np.cos(theta_rad), r*np.sin(theta_rad)
     head_width = 0.05
     head_length = 0.12
     linewidth = 1.5
     
+    # Define some colors from the Seaborn deep palette
+    blue = "#4C72B0"
+    green = "#55A868"
+    
     # Make blade velocity vector
     x1, y1 = rotate((0.5, tsr*u_infty), np.deg2rad(theta_deg))
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
-             length_includes_head=True, color="black", linewidth=linewidth)
-    ax.text(x1 + 0.01, y1 + 0.05*np.sign(y1), r"$\omega r$")
+             length_includes_head=True, color=blue, linewidth=linewidth)
+    if label:
+        ax.text(x1 + 0.01, y1 + 0.05*np.sign(y1), r"$\omega r$")
     
     # Make free stream velocity vector
     y1 += u_infty
     ax.arrow(x1, y1, 0, -u_infty, head_width=head_width, 
-             head_length=head_length, length_includes_head=True, color="blue",
+             head_length=head_length, length_includes_head=True, color="k",
              linewidth=linewidth)
              
     # Make relative velocity vector
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
-             length_includes_head=True, color="green", linewidth=linewidth)
+             length_includes_head=True, color=green, linewidth=linewidth)
 
 
-def plot_diagram(theta_deg=0.0, tsr=2.0, save=False):
+def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
     """Plot full vector diagram."""
     fig, ax = plt.subplots(figsize=(6, 6))
     
     plot_foil(ax, c=0.3, theta_deg=theta_deg)
     plot_radius(ax, theta_deg)
-    plot_velocities(ax, theta_deg, tsr)
+    plot_velocities(ax, theta_deg, tsr, label=label)
 
     # Figure formatting    
     ax.set_xlim((-1, 1))
@@ -127,4 +132,4 @@ def plot_diagram(theta_deg=0.0, tsr=2.0, save=False):
 
 if __name__ == "__main__":
     plt.rcParams["font.size"] = 18
-    plot_diagram(300)
+    plot_diagram(220)
