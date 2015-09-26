@@ -67,6 +67,11 @@ def make_arrow(xy_start, xy_end, label=""):
     return gz.Group((line, head))
     
     
+def make_diagram(tsr, theta):
+    """Create entire turbine diagram as a Group."""
+    pass
+    
+    
 def plot_surface(surface):
     """Plot a Gizeh Surface with matplotlib."""
     plt.figure(figsize=(6, 6))
