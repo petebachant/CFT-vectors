@@ -83,15 +83,24 @@ def plot_velocities(ax, theta_deg=0.0, tsr=2.0):
     u_infty = 0.25
     theta_rad = np.deg2rad(theta_deg)
     blade_xy = r*np.cos(theta_rad), r*np.sin(theta_rad)
+    head_width = 0.05
+    head_length = 0.12
+    linewidth = 1.5
     
     # Make blade velocity vector
     x1, y1 = rotate((0.5, tsr*u_infty), np.deg2rad(theta_deg))
     print(blade_xy)
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
     print(dx, dy)
-    ax.arrow(x1, y1, dx, dy, head_width=0.06, head_length=0.15, 
-             length_includes_head=True, color="black", linewidth=1.5)
+    ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
+             length_includes_head=True, color="black", linewidth=linewidth)
     ax.text(x1 + 0.01, y1 + 0.05*np.sign(y1), r"$\omega r$")
+    
+    # Make free stream velocity vector
+    y1 += u_infty
+    ax.arrow(x1, y1, 0, -u_infty, head_width=head_width, 
+             head_length=head_length, length_includes_head=True, color="blue",
+             linewidth=linewidth)
 
 
 def plot_diagram(theta_deg=0.0, tsr=2.0, save=False):
@@ -114,4 +123,4 @@ def plot_diagram(theta_deg=0.0, tsr=2.0, save=False):
 
 if __name__ == "__main__":
     plt.rcParams["font.size"] = 18
-    plot_diagram(340)
+    plot_diagram(90)
