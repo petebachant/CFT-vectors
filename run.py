@@ -4,6 +4,7 @@ This script generates a force and velocity vector diagram for a cross-flow
 turbine.
 """
 
+from __future__ import division, print_function
 import gizeh as gz
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,6 +15,14 @@ def mag(v):
     Return magnitude of 2-D vector (input as a tuple, list, or NumPy array).
     """
     return np.sqrt(v[0]**2 + v[1]**2)
+    
+
+def rotate(v, rad):
+    """Rotate a vector by rad radians."""
+    dc, ds = np.cos(rad), np.sin(rad)
+    x, y = v[0], v[1]
+    x, y = dc*x - ds*y, ds*x + dc*y
+    return np.array((x, y))
 
 
 def gen_naca_points(naca="0020", c=100, npoints=100):
@@ -51,20 +60,30 @@ def make_foil(naca="0020", c=100, xy=(350, 350), angle=np.pi/2, **kwargs):
     return line
 
 
-def make_arrow(xy_start, xy_end, label=""):
+def make_arrow(xy_start, xy_end, head_angle_deg=25, head_len=40, label="",
+               color=(0, 0, 0), stroke_width=2, **kwargs):
     """Make an arrow."""
-    x_start, y_start = xy_start
-    x_end, y_end = xy_end
-    angle = np.arctan2(y_end - y_start, x_end - x_start)
-    print(np.rad2deg(angle))
-    line = gz.polyline((xy_start, xy_end), stroke_width=2)
-    
-    head_angle = np.deg2rad(30.0)
-    
-    
-    head_point2 = (xy_end[0] + 50, xy_end[1] + 150)
-    head = gz.polyline((xy_end, head_point2), stroke_width=2, close_path=False)
-    return gz.Group((line, head))
+    head_angle = np.deg2rad(head_angle_deg)
+    xy_start = np.array(xy_start, dtype=float)
+    xy_end = np.array(xy_end, dtype=float)
+    # Create shaft
+    shaft = gz.polyline((xy_start, xy_end), stroke_width=stroke_width, 
+                        stroke=color, **kwargs)
+    # Create direction vector
+    direction = xy_end - xy_start
+    direction /= mag(direction)
+    # Head direction 2 is direction rotated by half the head angle
+    head_dir2 = rotate(direction, head_angle/2)
+    # Hypotenuse of arrow head
+    head_hypot = head_len*np.cos(head_angle/2)    
+    # Head points are created by moving along head directions
+    head_point2 = xy_end - head_hypot*head_dir2
+    head_dir1 = rotate(direction, -head_angle/2)
+    head_point1 = xy_end - head_hypot*head_dir1
+    head = gz.polyline((xy_end, head_point2, head_point1), 
+                       stroke_width=stroke_width, close_path=True, 
+                       stroke=color, fill=color)
+    return gz.Group((shaft, head))
     
     
 def make_diagram(tsr, theta):
@@ -90,7 +109,10 @@ def main():
     foil = make_foil(c=c, xy=(origin_x + r, origin_y - c/4))
     foil.draw(canvas)
     arrow = make_arrow((100, 100), (300, 300))
+    arrow2 = make_arrow((400, 400), (400, 600), 
+                        color=(0.5, 0.5, 0.5), stroke_width=5)
     arrow.draw(canvas)
+    arrow2.draw(canvas)
     canvas.write_to_png("cft-vectors.png")
     
     plot_surface(canvas)
