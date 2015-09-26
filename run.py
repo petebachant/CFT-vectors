@@ -18,7 +18,7 @@ def mag(v):
     
 
 def rotate(v, rad):
-    """Rotate a vector by rad radians."""
+    """Rotate a 2-D vector by rad radians."""
     dc, ds = np.cos(rad), np.sin(rad)
     x, y = v[0], v[1]
     x, y = dc*x - ds*y, ds*x + dc*y
