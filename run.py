@@ -190,39 +190,46 @@ def plot_radius(ax, theta_deg=0):
     ax.plot((0, x2), (0, y2), "k", linewidth=2)
 
 
-def make_naca_path():
-    c = 0.3
+def make_naca_path(c=0.3, theta_deg=0.0):
     verts = gen_naca_points(c=c)
     verts = np.array([rotate(v, -np.pi/2) for v in verts])
     verts += (0.5, c/4)
+    theta_rad = np.deg2rad(theta_deg)
+    verts = np.array([rotate(v, theta_rad) for v in verts])
     p = matplotlib.path.Path(verts, closed=True)
     return p
         
     
-def plot_foil_patch():
+def plot_foil(ax, c=0.3, theta_deg=0.0):
     """Plot the foil shape using a matplotlib patch."""
-    p = matplotlib.patches.PathPatch(make_naca_path(), facecolor="gray")
-    fig, ax = plt.subplots(figsize=(6, 6))
-    plot_radius(ax)
-    t_start = ax.transData
-    t = matplotlib.transforms.Affine2D().rotate_deg(0)
-    t_end = t_start + t
-    p.set_transform(t_end)
+    p = matplotlib.patches.PathPatch(make_naca_path(c, theta_deg), 
+                                     facecolor="gray")
     ax.add_patch(p)
+    
+
+def plot_diagram(theta_deg=0.0, tsr=2.0):
+    """Plot full vector diagram."""
+    fig, ax = plt.subplots(figsize=(6, 6))
+    
+    plot_foil(ax, c=0.3, theta_deg=theta_deg)
+    plot_radius(ax, theta_deg)
+
+    
+    # Make blade velocity vector
+    ax.arrow(0.5, 0.5, 0, -0.5, head_width=0.06, head_length=0.15, 
+             length_includes_head=True, color="black", linewidth=1.5)
+    ax.text(0.5, 0.5, r"$\omega r$")
+
+    # Figure formatting    
     ax.set_xlim((-1, 1))
     ax.set_ylim((-1, 1))
     ax.set_aspect(1)
     ax.axis("off")
     
-    # Make relative velocity vector
-#    ax.annotate(r"$\omega r$", xy=(0.5, 0.3/4), xytext=(0.5, 0.25),
-#                arrowprops={"arrowstyle": "->"})
-    ax.arrow(0.5, 0.5, 0, -0.5, head_width=0.06, head_length=0.15, 
-             length_includes_head=True, color="black")
-    ax.text(0.5, 0.5, r"$\omega r$")
-
+    # Save figure
+    fig.savefig("test.pdf")
 
 
 if __name__ == "__main__":
     plt.rcParams["font.size"] = 18
-    plot_foil_patch()
+    plot_diagram(0)
