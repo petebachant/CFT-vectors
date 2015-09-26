@@ -73,22 +73,34 @@ def make_naca_path(c=0.3, theta_deg=0.0):
 def plot_foil(ax, c=0.3, theta_deg=0.0):
     """Plot the foil shape using a matplotlib patch."""
     p = matplotlib.patches.PathPatch(make_naca_path(c, theta_deg), 
-                                     facecolor="gray")
+                                     facecolor="gray", linewidth=1)
     ax.add_patch(p)
-    
 
-def plot_diagram(theta_deg=0.0, tsr=2.0):
+
+def plot_velocities(ax, theta_deg=0.0, tsr=2.0):
+    """Plot blade velocity, free stream velocity, and relative velocity."""
+    r = 0.5
+    u_infty = 0.25
+    theta_rad = np.deg2rad(theta_deg)
+    blade_xy = r*np.cos(theta_rad), r*np.sin(theta_rad)
+    
+    # Make blade velocity vector
+    x1, y1 = rotate((0.5, tsr*u_infty), np.deg2rad(theta_deg))
+    print(blade_xy)
+    dx, dy = np.array(blade_xy) - np.array((x1, y1))
+    print(dx, dy)
+    ax.arrow(x1, y1, dx, dy, head_width=0.06, head_length=0.15, 
+             length_includes_head=True, color="black", linewidth=1.5)
+    ax.text(x1 + 0.01, y1 + 0.05*np.sign(y1), r"$\omega r$")
+
+
+def plot_diagram(theta_deg=0.0, tsr=2.0, save=False):
     """Plot full vector diagram."""
     fig, ax = plt.subplots(figsize=(6, 6))
     
     plot_foil(ax, c=0.3, theta_deg=theta_deg)
     plot_radius(ax, theta_deg)
-
-    
-    # Make blade velocity vector
-    ax.arrow(0.5, 0.5, 0, -0.5, head_width=0.06, head_length=0.15, 
-             length_includes_head=True, color="black", linewidth=1.5)
-    ax.text(0.5, 0.5, r"$\omega r$")
+    plot_velocities(ax, theta_deg, tsr)
 
     # Figure formatting    
     ax.set_xlim((-1, 1))
@@ -96,10 +108,10 @@ def plot_diagram(theta_deg=0.0, tsr=2.0):
     ax.set_aspect(1)
     ax.axis("off")
     
-    # Save figure
-    fig.savefig("test.pdf")
+    if save:
+        fig.savefig("cft-vectors.pdf")
 
 
 if __name__ == "__main__":
     plt.rcParams["font.size"] = 18
-    plot_diagram(0)
+    plot_diagram(340)
