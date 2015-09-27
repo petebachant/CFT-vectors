@@ -202,6 +202,18 @@ def plot_alpha(ax=None, tsr=2.0, theta=None, **kwargs):
     ax.plot(df.theta, df.alpha_deg, **kwargs)
     if theta is not None:
         ax.plot(theta, df.alpha_deg[df.theta==theta].iloc[0], "ok")
+        
+        
+def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
+    """Plot angle of attack versus azimuthal angle."""
+    if ax is None:
+        fig, ax = plt.subplots()
+    df = calc_cft_ctorque(tsr=tsr)
+    ax.plot(df.theta, df.rel_vel_mag, **kwargs)
+    ax.set_ylabel(r"$|\vec{U}_\mathrm{rel}|$")
+    ax.set_xlabel(r"$\theta$ (deg.)")
+    if theta is not None:
+        ax.plot(theta, df.rel_vel_mag[df.theta==theta].iloc[0], "ok")
 
 
 def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
@@ -230,3 +242,4 @@ if __name__ == "__main__":
     plt.rcParams["font.size"] = 18
     plot_diagram(120)
     plot_alpha(theta=50)
+    plot_rel_vel_mag(theta=50)
