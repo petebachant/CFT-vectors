@@ -8,6 +8,68 @@ from __future__ import division, print_function
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import pandas as pd
+from scipy.interpolate import interp1d
+
+
+def load_foildata():
+    """Loads NACA 0020 airfoil data at Re = 2.1 x 10^5."""
+    Re = 2.1e5
+    foil = "0020"
+    fname = "NACA {}_T1_Re{:.3f}_M0.00_N9.0.dat".format(foil, Re/1e6)
+    fpath = "data/{}".format(fname)
+    alpha, cl, cd = np.loadtxt(fpath, skiprows=14, unpack=True)
+    if alpha[0] != 0.0:
+        alpha = np.append([0.0], alpha[:-1])
+        cl = np.append([0.0], cl[:-1])
+        cd = np.append(cd[0.0], cd[:-1])
+    df = pd.DataFrame()
+    df["alpha_deg"] = alpha
+    df["cl"] = cl
+    df["cd"] = cd
+    return df
+    
+    
+def lookup_foildata(alpha_deg):
+    """Lookup foil characteristics at given angle of attack."""
+    alpha_deg = np.asarray(alpha_deg)
+    df = load_foildata()
+    df["alpha_rad"] = df.alpha_deg/180*np.pi
+    f_cl = interp1d(df.alpha_deg, df.cl)
+    f_cd = interp1d(df.alpha_deg, df.cd)
+    f_ct = interp1d(df.alpha_deg, df.cl*np.sin(df.alpha_rad) \
+         - df.cd*np.cos(df.alpha_rad))
+    cl, cd, ct = f_cl(alpha_deg), f_cd(alpha_deg), f_ct(alpha_deg)
+    return {"cl": cl, "cd": cd, "ct": ct}
+    
+    
+def calc_cft_ctorque(tsr=2.0, chord=0.14, R=0.5):
+    """Calculate the geometric torque coefficient for a CFT."""
+    U_infty = 1.0
+    omega = tsr*U_infty/R
+    theta_blade_deg = np.arange(0, 361)
+    theta_blade_rad = theta_blade_deg/180.0*np.pi
+    blade_vel_mag = omega*R
+    blade_vel_x = blade_vel_mag*np.cos(theta_blade_rad)
+    blade_vel_y = blade_vel_mag*np.sin(theta_blade_rad)
+    u = U_infty # No induction
+    rel_vel_mag = np.sqrt((blade_vel_x + u)**2 + blade_vel_y**2)
+    rel_vel_x = u + blade_vel_x
+    rel_vel_y = blade_vel_y
+    relvel_dot_bladevel = (blade_vel_x*rel_vel_x + blade_vel_y*rel_vel_y)
+    alpha_rad = np.arccos(relvel_dot_bladevel/(rel_vel_mag*blade_vel_mag))
+    alpha_deg = alpha_rad*180/np.pi
+    foil_coeffs = lookup_foildata(alpha_deg)
+    ctorque = foil_coeffs["ct"]*chord/(2*R)*rel_vel_mag**2/U_infty**2
+    cdx = -foil_coeffs["cd"]*np.sin(np.pi/2 - alpha_rad + theta_blade_rad)
+    clx = foil_coeffs["cl"]*np.cos(np.pi/2 - alpha_rad - theta_blade_rad)
+    df = pd.DataFrame()
+    df["theta"] = theta_blade_deg
+    df["alpha_deg"] = alpha_deg
+    df["rel_vel_mag"] = rel_vel_mag
+    df["ctorque"] = ctorque
+    df["cdrag"] = clx + cdx
+    return df
 
 
 def mag(v):
