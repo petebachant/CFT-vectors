@@ -206,6 +206,8 @@ def plot_alpha(ax=None, tsr=2.0, theta=None, alpha_ss=None, **kwargs):
     ax.set_ylabel(r"$\alpha$ (degrees)")
     ax.set_xlabel(r"$\theta$ (degrees)")
     ax.set_xlim((0, 360))
+    ylim = np.round(df.alpha_deg.max() + 5)
+    ax.set_ylim((-ylim, ylim))
     if theta is not None:
         ax.plot(theta, df.alpha_deg[df.theta==theta].iloc[0], "ok")
     if alpha_ss is not None:
