@@ -169,11 +169,11 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     lift, and drag vectors.
     """
     r = 0.5
-    u_infty = 0.27
+    u_infty = 0.26
     theta_rad = np.deg2rad(theta_deg)
     blade_xy = r*np.cos(theta_rad), r*np.sin(theta_rad)
-    head_width = 0.05
-    head_length = 0.12
+    head_width = 0.04
+    head_length = 0.11
     linewidth = 1.5
     
     # Make blade velocity vector
@@ -205,10 +205,10 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
         alpha_deg *= -1
     
     # Make drag vector
-    drag_amplify = 2.0
+    drag_amplify = 3.0
     data = lookup_foildata(alpha_deg)
     drag = data["cd"]*mag(rel_vel)**2*drag_amplify
-    if drag < 0.1:
+    if drag < 0.4/drag_amplify:
         hs = 0.5
     else:
         hs = 1
@@ -275,7 +275,8 @@ def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
         ax.plot(theta, df.ctorque[df.theta==theta].iloc[0], "ok")
 
 
-def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False):
+def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False,
+                 axis="on"):
     """Plot full vector diagram."""
     if ax is None:
         fig, ax = plt.subplots(figsize=(6, 6))
@@ -291,7 +292,7 @@ def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False):
     ax.set_aspect(1)
     ax.set_xticks([])
     ax.set_yticks([])
-#    ax.axis("off")
+    ax.axis(axis)
     
     if save:
         fig.savefig("cft-vectors.pdf")
@@ -302,7 +303,7 @@ def plot_all(theta_deg=0.0, tsr=2.0):
     fig = plt.figure(figsize=(7.5, 4.75))
     # Draw vector diagram
     ax1 = plt.subplot2grid((3, 3), (0, 0), colspan=2, rowspan=3)
-    plot_diagram(ax1, theta_deg, tsr)
+    plot_diagram(ax1, theta_deg, tsr, axis="on")
     # Plot angle of attack
     ax2 = plt.subplot2grid((3, 3), (0, 2))
     plot_alpha(ax2, tsr=tsr, theta=theta_deg, alpha_ss=18, color=light_blue)
@@ -319,4 +320,4 @@ def plot_all(theta_deg=0.0, tsr=2.0):
 if __name__ == "__main__":
     set_sns(font_scale=1.25)
     plt.rcParams["axes.grid"] = True
-    plot_all(theta_deg=75, tsr=2.0)
+    plot_all(theta_deg=45, tsr=2.0)
