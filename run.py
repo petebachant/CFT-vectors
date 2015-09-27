@@ -208,7 +208,7 @@ def plot_alpha(ax=None, tsr=2.0, theta=None, **kwargs):
         
         
 def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
-    """Plot angle of attack versus azimuthal angle."""
+    """Plot relative velocity magnitude versus azimuthal angle."""
     if ax is None:
         fig, ax = plt.subplots()
     df = calc_cft_ctorque(tsr=tsr)
@@ -218,6 +218,19 @@ def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
     ax.set_xlim((0, 360))
     if theta is not None:
         ax.plot(theta, df.rel_vel_mag[df.theta==theta].iloc[0], "ok")
+        
+        
+def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
+    """Plot torque coefficient versus azimuthal angle."""
+    if ax is None:
+        fig, ax = plt.subplots()
+    df = calc_cft_ctorque(tsr=tsr)
+    ax.plot(df.theta, df.ctorque, **kwargs)
+    ax.set_ylabel("Torque coefficient")
+    ax.set_xlabel(r"$\theta$ (degrees)")
+    ax.set_xlim((0, 360))
+    if theta is not None:
+        ax.plot(theta, df.ctorque[df.theta==theta].iloc[0], "ok")
 
 
 def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
@@ -244,6 +257,8 @@ if __name__ == "__main__":
     set_sns()
     plt.rcParams["axes.grid"] = True
     plt.rcParams["font.size"] = 18
-    plot_diagram(120)
-    plot_alpha(theta=50)
-    plot_rel_vel_mag(theta=50)
+    theta = 270
+    plot_diagram(theta)
+    plot_alpha(theta=theta)
+    plot_rel_vel_mag(theta=theta)
+    plot_ctorque(theta=theta)
