@@ -13,6 +13,14 @@ from scipy.interpolate import interp1d
 from pxl.styleplot import set_sns
 
 
+# Define some colors (some from the Seaborn deep palette)
+blue = "#4C72B0"
+green = "#55A868"
+dark_gray = (0.3, 0.3, 0.3)
+red = "#C44E52"
+purple = "#8172B2"
+
+
 def load_foildata():
     """Loads NACA 0020 airfoil data at Re = 2.1 x 10^5."""
     Re = 2.1e5
@@ -165,13 +173,6 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     head_length = 0.12
     linewidth = 1.5
     
-    # Define some colors (some from the Seaborn deep palette)
-    blue = "#4C72B0"
-    green = "#55A868"
-    dark_gray = (0.3, 0.3, 0.3)
-    red = "#C44E52"
-    purple = "#8172B2"
-    
     # Make blade velocity vector
     x1, y1 = rotate((0.5, tsr*u_infty), np.deg2rad(theta_deg))
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
@@ -266,6 +267,6 @@ if __name__ == "__main__":
     plt.rcParams["font.size"] = 18
     theta = 270
     plot_diagram(theta)
-    plot_alpha(theta=theta, alpha_ss=18)
+    plot_alpha(theta=theta, alpha_ss=18, color=red, lw=3)
     plot_rel_vel_mag(theta=theta)
     plot_ctorque(theta=theta)
