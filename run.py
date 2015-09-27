@@ -194,7 +194,7 @@ def plot_velocities(ax, theta_deg=0.0, tsr=2.0, label=False):
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
 
-def plot_alpha(ax=None, tsr=2.0, theta=None, **kwargs):
+def plot_alpha(ax=None, tsr=2.0, theta=None, alpha_ss=None, **kwargs):
     """Plot angle of attack versus azimuthal angle."""
     if ax is None:
         fig, ax = plt.subplots()
@@ -205,6 +205,8 @@ def plot_alpha(ax=None, tsr=2.0, theta=None, **kwargs):
     ax.set_xlim((0, 360))
     if theta is not None:
         ax.plot(theta, df.alpha_deg[df.theta==theta].iloc[0], "ok")
+    if alpha_ss is not None:
+        ax.hlines((alpha_ss, -alpha_ss), 0, 360, linestyles="dashed")
         
         
 def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
@@ -259,6 +261,6 @@ if __name__ == "__main__":
     plt.rcParams["font.size"] = 18
     theta = 270
     plot_diagram(theta)
-    plot_alpha(theta=theta)
+    plot_alpha(theta=theta, alpha_ss=15)
     plot_rel_vel_mag(theta=theta)
     plot_ctorque(theta=theta)
