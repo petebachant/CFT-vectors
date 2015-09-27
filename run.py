@@ -261,6 +261,6 @@ if __name__ == "__main__":
     plt.rcParams["font.size"] = 18
     theta = 270
     plot_diagram(theta)
-    plot_alpha(theta=theta, alpha_ss=15)
+    plot_alpha(theta=theta, alpha_ss=18)
     plot_rel_vel_mag(theta=theta)
     plot_ctorque(theta=theta)
