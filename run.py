@@ -34,7 +34,7 @@ def lookup_foildata(alpha_deg):
     """Lookup foil characteristics at given angle of attack."""
     alpha_deg = np.asarray(alpha_deg)
     df = load_foildata()
-    df["alpha_rad"] = df.alpha_deg/180*np.pi
+    df["alpha_rad"] = np.deg2rad(df.alpha_deg)
     f_cl = interp1d(df.alpha_deg, df.cl)
     f_cd = interp1d(df.alpha_deg, df.cd)
     f_ct = interp1d(df.alpha_deg, df.cl*np.sin(df.alpha_rad) \
@@ -48,7 +48,7 @@ def calc_cft_ctorque(tsr=2.0, chord=0.14, R=0.5):
     U_infty = 1.0
     omega = tsr*U_infty/R
     theta_blade_deg = np.arange(0, 361)
-    theta_blade_rad = theta_blade_deg/180.0*np.pi
+    theta_blade_rad = np.deg2rad(theta_blade_deg)
     blade_vel_mag = omega*R
     blade_vel_x = blade_vel_mag*np.cos(theta_blade_rad)
     blade_vel_y = blade_vel_mag*np.sin(theta_blade_rad)
@@ -58,7 +58,7 @@ def calc_cft_ctorque(tsr=2.0, chord=0.14, R=0.5):
     rel_vel_y = blade_vel_y
     relvel_dot_bladevel = (blade_vel_x*rel_vel_x + blade_vel_y*rel_vel_y)
     alpha_rad = np.arccos(relvel_dot_bladevel/(rel_vel_mag*blade_vel_mag))
-    alpha_deg = alpha_rad*180/np.pi
+    alpha_deg = np.rad2deg(alpha_rad)
     foil_coeffs = lookup_foildata(alpha_deg)
     ctorque = foil_coeffs["ct"]*chord/(2*R)*rel_vel_mag**2/U_infty**2
     cdx = -foil_coeffs["cd"]*np.sin(np.pi/2 - alpha_rad + theta_blade_rad)
