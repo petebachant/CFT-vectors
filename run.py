@@ -241,32 +241,48 @@ def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
         ax.plot(theta, df.ctorque[df.theta==theta].iloc[0], "ok")
 
 
-def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
+def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False):
     """Plot full vector diagram."""
-    fig, ax = plt.subplots(figsize=(6, 6))
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(6, 6))
     
     plot_foil(ax, c=0.3, theta_deg=theta_deg)
     plot_radius(ax, theta_deg)
     plot_center(ax)
-    vels = plot_vectors(ax, theta_deg, tsr, label=label)
-    print(vels)
+    plot_vectors(ax, theta_deg, tsr, label=label)
 
     # Figure formatting    
     ax.set_xlim((-1, 1))
     ax.set_ylim((-1, 1))
     ax.set_aspect(1)
-    ax.axis("off")
+    ax.set_xticks([])
+    ax.set_yticks([])
+#    ax.axis("off")
     
     if save:
         fig.savefig("cft-vectors.pdf")
-
+        
+        
+def plot_all(theta_deg=0.0, tsr=2.0):
+    """Create diagram and plots of kinematics in a single figure."""
+    fig = plt.figure(figsize=(7.5, 4.75))
+    # Draw vector diagram
+    ax1 = plt.subplot2grid((3, 3), (0, 0), colspan=2, rowspan=3)
+    plot_diagram(ax1, theta_deg, tsr)
+    # Plot angle of attack
+    ax2 = plt.subplot2grid((3, 3), (0, 2))
+    plot_alpha(ax2, tsr=tsr, theta=theta_deg, alpha_ss=18, color=red)
+    # Plot relative velocity magnitude
+    ax3 = plt.subplot2grid((3, 3), (1, 2))
+    plot_rel_vel_mag(ax3, tsr=tsr, theta=theta_deg, color=green)
+    # Plot torque coefficient
+    ax4 = plt.subplot2grid((3, 3), (2, 2))
+    plot_ctorque(ax4, tsr=tsr, theta=theta_deg, color=purple)
+    
+    fig.tight_layout()
+    
 
 if __name__ == "__main__":
-    set_sns()
+    set_sns(font_scale=1.25)
     plt.rcParams["axes.grid"] = True
-    plt.rcParams["font.size"] = 18
-    theta = 270
-    plot_diagram(theta)
-    plot_alpha(theta=theta, alpha_ss=18, color=red, lw=3)
-    plot_rel_vel_mag(theta=theta)
-    plot_ctorque(theta=theta)
+    plot_all(theta_deg=60, tsr=2.0)
