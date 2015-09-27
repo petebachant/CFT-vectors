@@ -200,6 +200,9 @@ def plot_alpha(ax=None, tsr=2.0, theta=None, **kwargs):
         fig, ax = plt.subplots()
     df = calc_cft_ctorque(tsr=tsr)
     ax.plot(df.theta, df.alpha_deg, **kwargs)
+    ax.set_ylabel(r"$\alpha$ (degrees)")
+    ax.set_xlabel(r"$\theta$ (degrees)")
+    ax.set_xlim((0, 360))
     if theta is not None:
         ax.plot(theta, df.alpha_deg[df.theta==theta].iloc[0], "ok")
         
@@ -211,7 +214,8 @@ def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
     df = calc_cft_ctorque(tsr=tsr)
     ax.plot(df.theta, df.rel_vel_mag, **kwargs)
     ax.set_ylabel(r"$|\vec{U}_\mathrm{rel}|$")
-    ax.set_xlabel(r"$\theta$ (deg.)")
+    ax.set_xlabel(r"$\theta$ (degrees)")
+    ax.set_xlim((0, 360))
     if theta is not None:
         ax.plot(theta, df.rel_vel_mag[df.theta==theta].iloc[0], "ok")
 
