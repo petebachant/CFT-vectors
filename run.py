@@ -10,15 +10,18 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.interpolate import interp1d
+import seaborn as sns
 from pxl.styleplot import set_sns
 
 
 # Define some colors (some from the Seaborn deep palette)
-blue = "#4C72B0"
-green = "#55A868"
+blue = sns.color_palette()[0]
+green = sns.color_palette()[1]
 dark_gray = (0.3, 0.3, 0.3)
-red = "#C44E52"
-purple = "#8172B2"
+red = sns.color_palette()[2]
+purple = sns.color_palette()[3]
+tan = sns.color_palette()[4]
+light_blue = sns.color_palette()[5]
 
 
 def load_foildata():
@@ -30,7 +33,7 @@ def load_foildata():
     alpha, cl, cd = np.loadtxt(fpath, skiprows=14, unpack=True)
     if alpha[0] != 0.0:
         alpha = np.append([0.0], alpha[:-1])
-        cl = np.append([0.0], cl[:-1])
+        cl = np.append([1e-12], cl[:-1])
         cd = np.append(cd[0], cd[:-1])
     # Mirror data about 0 degrees AoA since it's a symmetrical foil
     alpha = np.append(-np.flipud(alpha), alpha)
@@ -193,8 +196,39 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
     rel_vel = u_infty + blade_vel
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
-             length_includes_head=True, color=green, linewidth=linewidth)
-             
+             length_includes_head=True, color=tan, linewidth=linewidth)
+    
+    # Calculate angle between blade vel and rel vel
+    alpha_deg = np.rad2deg(np.arccos(np.dot(blade_vel/mag(blade_vel), 
+                                            rel_vel/mag(rel_vel))))
+    if theta_deg > 180:
+        alpha_deg *= -1
+    
+    # Make drag vector
+    drag_amplify = 2.0
+    data = lookup_foildata(alpha_deg)
+    drag = data["cd"]*mag(rel_vel)**2*drag_amplify
+    if drag < 0.1:
+        hs = 0.5
+    else:
+        hs = 1
+    dx, dy = drag*np.array((dx, dy))/mag((dx, dy))
+    ax.arrow(blade_xy[0], blade_xy[1], dx, dy, head_width=head_width*hs, 
+             head_length=head_length*hs, length_includes_head=True, color=red, 
+             linewidth=linewidth)
+    
+    # Make lift vector
+    lift_amplify = 1.5
+    lift = data["cl"]*mag(rel_vel)**2*lift_amplify
+    dx, dy = rotate((dx, dy), -np.pi/2)/mag((dx, dy))*lift
+    if lift < 0.5/lift_amplify:
+        hs = 0.5
+    else:
+        hs = 1
+    ax.arrow(blade_xy[0], blade_xy[1], dx, dy, head_width=head_width*hs, 
+             head_length=head_length*hs, length_includes_head=True, color=green, 
+             linewidth=linewidth)
+
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
 
@@ -271,10 +305,10 @@ def plot_all(theta_deg=0.0, tsr=2.0):
     plot_diagram(ax1, theta_deg, tsr)
     # Plot angle of attack
     ax2 = plt.subplot2grid((3, 3), (0, 2))
-    plot_alpha(ax2, tsr=tsr, theta=theta_deg, alpha_ss=18, color=red)
+    plot_alpha(ax2, tsr=tsr, theta=theta_deg, alpha_ss=18, color=light_blue)
     # Plot relative velocity magnitude
     ax3 = plt.subplot2grid((3, 3), (1, 2))
-    plot_rel_vel_mag(ax3, tsr=tsr, theta=theta_deg, color=green)
+    plot_rel_vel_mag(ax3, tsr=tsr, theta=theta_deg, color=tan)
     # Plot torque coefficient
     ax4 = plt.subplot2grid((3, 3), (2, 2))
     plot_ctorque(ax4, tsr=tsr, theta=theta_deg, color=purple)
@@ -285,4 +319,4 @@ def plot_all(theta_deg=0.0, tsr=2.0):
 if __name__ == "__main__":
     set_sns(font_scale=1.25)
     plt.rcParams["axes.grid"] = True
-    plot_all(theta_deg=60, tsr=2.0)
+    plot_all(theta_deg=75, tsr=2.0)
