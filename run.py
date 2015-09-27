@@ -10,6 +10,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.interpolate import interp1d
+from pxl.styleplot import set_sns
 
 
 def load_foildata():
@@ -23,6 +24,10 @@ def load_foildata():
         alpha = np.append([0.0], alpha[:-1])
         cl = np.append([0.0], cl[:-1])
         cd = np.append(cd[0.0], cd[:-1])
+    # Mirror data about 0 degrees AoA since it's a symmetrical foil
+    alpha = np.append(-np.flipud(alpha), alpha)
+    cl = np.append(-np.flipud(cl), cl)
+    cd = np.append(np.flipud(cd), cd)
     df = pd.DataFrame()
     df["alpha_deg"] = alpha
     df["cl"] = cl
@@ -58,6 +63,7 @@ def calc_cft_ctorque(tsr=2.0, chord=0.14, R=0.5):
     rel_vel_y = blade_vel_y
     relvel_dot_bladevel = (blade_vel_x*rel_vel_x + blade_vel_y*rel_vel_y)
     alpha_rad = np.arccos(relvel_dot_bladevel/(rel_vel_mag*blade_vel_mag))
+    alpha_rad[theta_blade_deg > 180] *= -1
     alpha_deg = np.rad2deg(alpha_rad)
     foil_coeffs = lookup_foildata(alpha_deg)
     ctorque = foil_coeffs["ct"]*chord/(2*R)*rel_vel_mag**2/U_infty**2
@@ -188,6 +194,16 @@ def plot_velocities(ax, theta_deg=0.0, tsr=2.0, label=False):
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
 
+def plot_alpha(ax=None, tsr=2.0, theta=None, **kwargs):
+    """Plot angle of attack versus azimuthal angle."""
+    if ax is None:
+        fig, ax = plt.subplots()
+    df = calc_cft_ctorque(tsr=tsr)
+    ax.plot(df.theta, df.alpha_deg, **kwargs)
+    if theta is not None:
+        ax.plot(theta, df.alpha_deg[df.theta==theta].iloc[0], "ok")
+
+
 def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
     """Plot full vector diagram."""
     fig, ax = plt.subplots(figsize=(6, 6))
@@ -209,5 +225,8 @@ def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
 
 
 if __name__ == "__main__":
+    set_sns()
+    plt.rcParams["axes.grid"] = True
     plt.rcParams["font.size"] = 18
     plot_diagram(120)
+    plot_alpha(theta=50)
