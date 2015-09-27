@@ -23,7 +23,7 @@ def load_foildata():
     if alpha[0] != 0.0:
         alpha = np.append([0.0], alpha[:-1])
         cl = np.append([0.0], cl[:-1])
-        cd = np.append(cd[0.0], cd[:-1])
+        cd = np.append(cd[0], cd[:-1])
     # Mirror data about 0 degrees AoA since it's a symmetrical foil
     alpha = np.append(-np.flipud(alpha), alpha)
     cl = np.append(-np.flipud(cl), cl)
