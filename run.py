@@ -152,8 +152,11 @@ def plot_foil(ax, c=0.3, theta_deg=0.0):
     ax.add_patch(p)
 
 
-def plot_velocities(ax, theta_deg=0.0, tsr=2.0, label=False):
-    """Plot blade velocity, free stream velocity, and relative velocity."""
+def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
+    """
+    Plot blade velocity, free stream velocity, relative velocity,
+    lift, and drag vectors.
+    """
     r = 0.5
     u_infty = 0.27
     theta_rad = np.deg2rad(theta_deg)
@@ -242,7 +245,7 @@ def plot_diagram(theta_deg=0.0, tsr=2.0, label=False, save=False):
     plot_foil(ax, c=0.3, theta_deg=theta_deg)
     plot_radius(ax, theta_deg)
     plot_center(ax)
-    vels = plot_velocities(ax, theta_deg, tsr, label=label)
+    vels = plot_vectors(ax, theta_deg, tsr, label=label)
     print(vels)
 
     # Figure formatting    
