@@ -341,14 +341,14 @@ def plot_all(theta_deg=0.0, tsr=2.0, full_view=True):
 
 def make_frame(t):
     """Make a frame for a movie."""
-    sec_per_rev = 4.0
+    sec_per_rev = 5.0
     deg = t/sec_per_rev*360
     return mplfig_to_npimage(plot_all(deg))
     
     
 def make_animation():
     """Make animation video."""
-    animation = VideoClip(make_frame, duration=4.0)
+    animation = VideoClip(make_frame, duration=5.0)
 #    animation.write_videofile("figures/cft-animation.mp4", fps=30)
     animation.write_gif("figures/cft-animation.gif", fps=15)
     
