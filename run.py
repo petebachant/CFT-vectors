@@ -278,7 +278,7 @@ def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
         fig, ax = plt.subplots()
     df = calc_cft_ctorque(tsr=tsr)
     ax.plot(df.theta, df.ctorque, **kwargs)
-    ax.set_ylabel("Torque coefficient")
+    ax.set_ylabel("Torque coeff.")
     ax.set_xlabel(r"$\theta$ (degrees)")
     ax.set_xlim((0, 360))
     if theta is not None:
