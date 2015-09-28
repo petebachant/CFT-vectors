@@ -195,6 +195,7 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     # Make relative velocity vector
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
     rel_vel = u_infty + blade_vel
+    ax.plot((x1, x1 + dx), (y1, y1 + dy), lw=0)
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
              length_includes_head=True, color=tan, linewidth=linewidth)
     
@@ -225,6 +226,8 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
         hs = 0.5
     else:
         hs = 1
+    ax.plot((blade_xy[0], blade_xy[0] + dx), (blade_xy[1], blade_xy[1] + dy), 
+            linewidth=0)
     ax.arrow(blade_xy[0], blade_xy[1], dx, dy, head_width=head_width*hs, 
              head_length=head_length*hs, length_includes_head=True, color=green, 
              linewidth=linewidth)
@@ -276,7 +279,7 @@ def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
 
 
 def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False,
-                 axis="on"):
+                 axis="on", full_view=True):
     """Plot full vector diagram."""
     if ax is None:
         fig, ax = plt.subplots(figsize=(6, 6))
@@ -286,9 +289,10 @@ def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False,
     plot_center(ax)
     plot_vectors(ax, theta_deg, tsr, label=label)
 
-    # Figure formatting    
-    ax.set_xlim((-1, 1))
-    ax.set_ylim((-1, 1))
+    # Figure formatting
+    if full_view:  
+        ax.set_xlim((-1, 1))
+        ax.set_ylim((-1, 1))
     ax.set_aspect(1)
     ax.set_xticks([])
     ax.set_yticks([])
@@ -298,12 +302,12 @@ def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False,
         fig.savefig("cft-vectors.pdf")
         
         
-def plot_all(theta_deg=0.0, tsr=2.0):
+def plot_all(theta_deg=0.0, tsr=2.0, full_view=False):
     """Create diagram and plots of kinematics in a single figure."""
     fig = plt.figure(figsize=(7.5, 4.75))
     # Draw vector diagram
     ax1 = plt.subplot2grid((3, 3), (0, 0), colspan=2, rowspan=3)
-    plot_diagram(ax1, theta_deg, tsr, axis="on")
+    plot_diagram(ax1, theta_deg, tsr, axis="on", full_view=full_view)
     # Plot angle of attack
     ax2 = plt.subplot2grid((3, 3), (0, 2))
     plot_alpha(ax2, tsr=tsr, theta=theta_deg, alpha_ss=18, color=light_blue)
@@ -320,4 +324,4 @@ def plot_all(theta_deg=0.0, tsr=2.0):
 if __name__ == "__main__":
     set_sns(font_scale=1.25)
     plt.rcParams["axes.grid"] = True
-    plot_all(theta_deg=45, tsr=2.0)
+    plot_all(theta_deg=100, tsr=2.0, full_view=True)
