@@ -139,7 +139,7 @@ def plot_radius(ax, theta_deg=0):
     ax.plot((0, x2), (0, y2), "gray", linewidth=2)
     
 
-def plot_center(ax, length=0.07, linewidth=1.75):
+def plot_center(ax, length=0.07, linewidth=1.2):
     """Plot centermark at origin."""
     ax.plot((0, 0), (-length/2, length/2), lw=linewidth, color="black")
     ax.plot((-length/2, length/2), (0, 0), lw=linewidth, color="black")
