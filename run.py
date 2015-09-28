@@ -222,15 +222,15 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     lift_amplify = 1.5
     lift = data["cl"]*mag(rel_vel)**2*lift_amplify
     dx, dy = rotate((dx, dy), -np.pi/2)/mag((dx, dy))*lift
-    if lift < 0.5/lift_amplify:
+    if np.abs(lift) < 0.5/lift_amplify:
         hs = 0.5
     else:
         hs = 1
     ax.plot((blade_xy[0], blade_xy[0] + dx), (blade_xy[1], blade_xy[1] + dy), 
             linewidth=0)
     ax.arrow(blade_xy[0], blade_xy[1], dx, dy, head_width=head_width*hs, 
-             head_length=head_length*hs, length_includes_head=True, color=green, 
-             linewidth=linewidth)
+             head_length=head_length*hs, length_includes_head=True, 
+             color=green, linewidth=linewidth)
 
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
@@ -324,4 +324,4 @@ def plot_all(theta_deg=0.0, tsr=2.0, full_view=False):
 if __name__ == "__main__":
     set_sns(font_scale=1.25)
     plt.rcParams["axes.grid"] = True
-    plot_all(theta_deg=100, tsr=2.0, full_view=True)
+    plot_all(theta_deg=300, tsr=2.0, full_view=True)
