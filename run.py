@@ -161,6 +161,13 @@ def plot_foil(ax, c=0.3, theta_deg=0.0):
                                      facecolor="gray", linewidth=1,
                                      edgecolor="gray")
     ax.add_patch(p)
+    
+
+def plot_blade_path(ax, R=0.5):
+    """Plot blade path as a dashed line."""
+    p = plt.Circle((0, 0), R, linestyle="dashed", edgecolor="black", 
+                   facecolor="none", linewidth=1)
+    ax.add_patch(p)
 
 
 def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
@@ -284,6 +291,7 @@ def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False,
     if ax is None:
         fig, ax = plt.subplots(figsize=(6, 6))
     
+    plot_blade_path(ax)
     plot_foil(ax, c=0.3, theta_deg=theta_deg)
     plot_radius(ax, theta_deg)
     plot_center(ax)
