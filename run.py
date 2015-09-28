@@ -12,6 +12,8 @@ import pandas as pd
 from scipy.interpolate import interp1d
 import seaborn as sns
 from pxl.styleplot import set_sns
+from moviepy.editor import VideoClip
+from moviepy.video.io.bindings import mplfig_to_npimage
 
 
 # Define some colors (some from the Seaborn deep palette)
@@ -63,7 +65,7 @@ def calc_cft_ctorque(tsr=2.0, chord=0.14, R=0.5):
     """Calculate the geometric torque coefficient for a CFT."""
     U_infty = 1.0
     omega = tsr*U_infty/R
-    theta_blade_deg = np.arange(0, 361)
+    theta_blade_deg = np.arange(0, 721)
     theta_blade_rad = np.deg2rad(theta_blade_deg)
     blade_vel_mag = omega*R
     blade_vel_x = blade_vel_mag*np.cos(theta_blade_rad)
@@ -177,6 +179,7 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     """
     r = 0.5
     u_infty = 0.26
+    theta_deg %= 360
     theta_rad = np.deg2rad(theta_deg)
     blade_xy = r*np.cos(theta_rad), r*np.sin(theta_rad)
     head_width = 0.04
@@ -229,7 +232,7 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     lift_amplify = 1.5
     lift = data["cl"]*mag(rel_vel)**2*lift_amplify
     dx, dy = rotate((dx, dy), -np.pi/2)/mag((dx, dy))*lift
-    if np.abs(lift) < 0.5/lift_amplify:
+    if np.abs(lift) < 0.4/lift_amplify:
         hs = 0.5
     else:
         hs = 1
@@ -244,6 +247,7 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
 
 def plot_alpha(ax=None, tsr=2.0, theta=None, alpha_ss=None, **kwargs):
     """Plot angle of attack versus azimuthal angle."""
+    theta %= 360
     if ax is None:
         fig, ax = plt.subplots()
     df = calc_cft_ctorque(tsr=tsr)
@@ -254,13 +258,15 @@ def plot_alpha(ax=None, tsr=2.0, theta=None, alpha_ss=None, **kwargs):
     ylim = np.round(df.alpha_deg.max() + 5)
     ax.set_ylim((-ylim, ylim))
     if theta is not None:
-        ax.plot(theta, df.alpha_deg[df.theta==theta].iloc[0], "ok")
+        f = interp1d(df.theta, df.alpha_deg)
+        ax.plot(theta, f(theta), "ok")
     if alpha_ss is not None:
         ax.hlines((alpha_ss, -alpha_ss), 0, 360, linestyles="dashed")
         
         
 def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
     """Plot relative velocity magnitude versus azimuthal angle."""
+    theta %= 360
     if ax is None:
         fig, ax = plt.subplots()
     df = calc_cft_ctorque(tsr=tsr)
@@ -269,11 +275,13 @@ def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
     ax.set_xlabel(r"$\theta$ (degrees)")
     ax.set_xlim((0, 360))
     if theta is not None:
-        ax.plot(theta, df.rel_vel_mag[df.theta==theta].iloc[0], "ok")
+        f = interp1d(df.theta, df.rel_vel_mag)
+        ax.plot(theta, f(theta), "ok")
         
         
 def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
     """Plot torque coefficient versus azimuthal angle."""
+    theta %= 360
     if ax is None:
         fig, ax = plt.subplots()
     df = calc_cft_ctorque(tsr=tsr)
@@ -282,7 +290,8 @@ def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
     ax.set_xlabel(r"$\theta$ (degrees)")
     ax.set_xlim((0, 360))
     if theta is not None:
-        ax.plot(theta, df.ctorque[df.theta==theta].iloc[0], "ok")
+        f = interp1d(df.theta, df.ctorque)
+        ax.plot(theta, f(theta), "ok")
 
 
 def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False,
@@ -310,7 +319,7 @@ def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False,
         fig.savefig("cft-vectors.pdf")
         
         
-def plot_all(theta_deg=0.0, tsr=2.0, full_view=False):
+def plot_all(theta_deg=0.0, tsr=2.0, full_view=True):
     """Create diagram and plots of kinematics in a single figure."""
     fig = plt.figure(figsize=(7.5, 4.75))
     # Draw vector diagram
@@ -327,9 +336,25 @@ def plot_all(theta_deg=0.0, tsr=2.0, full_view=False):
     plot_ctorque(ax4, tsr=tsr, theta=theta_deg, color=purple)
     
     fig.tight_layout()
+    return fig
+    
+
+def make_frame(t):
+    """Make a frame for a movie."""
+    sec_per_rev = 4.0
+    deg = t/sec_per_rev*360
+    return mplfig_to_npimage(plot_all(deg))
+    
+    
+def make_animation():
+    """Make animation video."""
+    animation = VideoClip(make_frame, duration=4.0)
+#    animation.write_videofile("figures/cft-animation.mp4", fps=30)
+    animation.write_gif("figures/cft-animation.gif", fps=15)
     
 
 if __name__ == "__main__":
     set_sns(font_scale=1.25)
     plt.rcParams["axes.grid"] = True
-    plot_all(theta_deg=300, tsr=2.0, full_view=True)
+    plot_all(theta_deg=360+25, tsr=2.0, full_view=True)
+    make_animation()
