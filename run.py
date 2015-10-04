@@ -186,6 +186,26 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     head_length = 0.11
     linewidth = 1.5
     
+    # Function for plotting labels
+    def plot_label(text, x, y, dx, dy, text_width=0.09, text_height=0.03,
+                   sign=-1):
+        dvec = np.array((dx, dy))
+        perp_vec = rotate(dvec, np.pi/2)
+        perp_vec /= mag(perp_vec)
+        if theta_deg > 270:
+            diag = text_height
+        else:
+            diag = np.array((text_width, text_height))
+        # Projection of text diagonal vector onto normal vector
+        proj = np.dot(diag, perp_vec)
+        if sign != -1:
+            proj = 0 # Text is on right side of vector
+        if theta_deg > 180:
+            sign *= -1
+        dxlab, dylab = perp_vec*(np.abs(proj) + .01)*sign
+        xlab, ylab = x1 + dx/3 + dxlab, y1 + dy/3 + dylab
+        ax.text(xlab, ylab, text)
+    
     # Make blade velocity vector
     x1, y1 = rotate((0.5, tsr*u_infty), np.deg2rad(theta_deg))
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
@@ -193,22 +213,7 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
              length_includes_head=True, color=dark_gray, linewidth=linewidth)
     if label:
-        perp_vec = rotate((dx, dy), np.pi/2)
-        perp_vec /= mag(perp_vec)
-        text_width = 0.09
-        text_height = 0.03
-        if theta_deg > 270:
-            diag = text_height
-        else:
-            diag = np.array((text_width, text_height))
-        # Projection of text diagonal vector onto normal vector
-        proj = np.dot(diag, perp_vec)
-        sign = -1
-        if theta_deg > 180:
-            sign = 1
-        dxlab, dylab = perp_vec*(np.abs(proj) + .01)*sign
-        xlab, ylab = x1 + dx/3 + dxlab, y1 + dy/3 + dylab
-        ax.text(xlab, ylab, r"$\omega r$", multialignment="center")
+        plot_label(r"$\omega r$", x1, y1, dx, dy)
     
     # Make free stream velocity vector
     y1 += u_infty
@@ -216,6 +221,9 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
              head_length=head_length, length_includes_head=True, 
              color=blue, linewidth=linewidth)
     u_infty = np.array((0, -u_infty))
+    if label:
+        dy = -mag(u_infty)
+        plot_label(r"$U_\infty$", x1, y1, 0, dy, text_width=0.1)
              
     # Make relative velocity vector
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
@@ -223,6 +231,9 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     ax.plot((x1, x1 + dx), (y1, y1 + dy), lw=0)
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
              length_includes_head=True, color=tan, linewidth=linewidth)
+    if label:
+        plot_label(r"$U_\mathrm{rel}$", x1, y1, dx, dy, sign=1, 
+                   text_width=0.11)
     
     # Calculate angle between blade vel and rel vel
     alpha_deg = np.rad2deg(np.arccos(np.dot(blade_vel/mag(blade_vel), 
@@ -242,6 +253,8 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     ax.arrow(blade_xy[0], blade_xy[1], dx, dy, head_width=head_width*hs, 
              head_length=head_length*hs, length_includes_head=True, color=red, 
              linewidth=linewidth)
+    if label:
+        plot_label(r"$F_d$", blade_xy[0], blade_xy[1], dx, dy, sign=1)
     
     # Make lift vector
     lift_amplify = 1.5
@@ -256,6 +269,8 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     ax.arrow(blade_xy[0], blade_xy[1], dx, dy, head_width=head_width*hs, 
              head_length=head_length*hs, length_includes_head=True, 
              color=green, linewidth=linewidth)
+    if label:
+        plot_label(r"$F_l$", blade_xy[0], blade_xy[1], dx, dy, sign=1)
 
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
@@ -371,6 +386,6 @@ def make_animation():
 if __name__ == "__main__":
     set_sns(font_scale=1.5)
     plt.rcParams["axes.grid"] = True
-    plot_diagram(theta_deg=20, label=True)
+    plot_diagram(theta_deg=60, label=True)
 #    plot_all(theta_deg=360+25, tsr=2.0, full_view=True, scale=1.5)
 #    make_animation()
