@@ -276,7 +276,8 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
                    
     # Label radius
     if label:
-        plot_label("$r$", 0, 0, blade_xy[0], blade_xy[1], text_width=0.04)
+        plot_label("$r$", 0, 0, blade_xy[0], blade_xy[1], text_width=0.04,
+                   text_height=0.04)
 
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
