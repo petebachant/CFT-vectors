@@ -385,11 +385,13 @@ def make_frame(t):
     return mplfig_to_npimage(plot_all(deg, scale=1.5))
     
     
-def make_animation():
+def make_animation(filetype="mp4", fps=30):
     """Make animation video."""
     animation = VideoClip(make_frame, duration=5.0)
-    animation.write_videofile("figures/cft-animation.mp4", fps=30)
-#    animation.write_gif("figures/cft-animation.gif", fps=15)
+    if "mp4" in filetype.lower():
+        animation.write_videofile("figures/cft-animation.mp4", fps=30)
+    elif "gif" in filetype.lower():
+        animation.write_gif("figures/cft-animation.gif", fps=15)
     
 
 if __name__ == "__main__":
