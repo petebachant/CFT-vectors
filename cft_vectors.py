@@ -12,8 +12,6 @@ import pandas as pd
 from scipy.interpolate import interp1d
 import seaborn as sns
 from pxl.styleplot import set_sns
-from moviepy.editor import VideoClip
-from moviepy.video.io.bindings import mplfig_to_npimage
 import os
 
 
@@ -412,5 +410,7 @@ if __name__ == "__main__":
     
     if args.create == "figure":
         plot_diagram(theta_deg=args.angle, label=True, axis="off")
-    elif args.create == "animation":    
+    elif args.create == "animation":
+        from moviepy.editor import VideoClip
+        from moviepy.video.io.bindings import mplfig_to_npimage
         make_animation()
