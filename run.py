@@ -186,9 +186,9 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     head_length = 0.11
     linewidth = 1.5
     
-    # Function for plotting labels
+    # Function for plotting vector labels
     def plot_label(text, x, y, dx, dy, text_width=0.09, text_height=0.03,
-                   sign=-1):
+                   sign=-1, dist=1.0/3.0):
         dvec = np.array((dx, dy))
         perp_vec = rotate(dvec, np.pi/2)
         perp_vec /= mag(perp_vec)
@@ -203,7 +203,7 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
         if theta_deg > 180:
             sign *= -1
         dxlab, dylab = perp_vec*(np.abs(proj) + .01)*sign
-        xlab, ylab = x1 + dx/3 + dxlab, y1 + dy/3 + dylab
+        xlab, ylab = x + dx*dist + dxlab, y + dy*dist + dylab
         ax.text(xlab, ylab, text)
     
     # Make blade velocity vector
@@ -254,7 +254,8 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
              head_length=head_length*hs, length_includes_head=True, color=red, 
              linewidth=linewidth)
     if label:
-        plot_label(r"$F_d$", blade_xy[0], blade_xy[1], dx, dy, sign=1)
+        plot_label(r"$F_d$", blade_xy[0], blade_xy[1], dx, dy, sign=-1, 
+                   dist=0.66)
     
     # Make lift vector
     lift_amplify = 1.5
@@ -270,7 +271,12 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
              head_length=head_length*hs, length_includes_head=True, 
              color=green, linewidth=linewidth)
     if label:
-        plot_label(r"$F_l$", blade_xy[0], blade_xy[1], dx, dy, sign=1)
+        plot_label(r"$F_l$", blade_xy[0], blade_xy[1], dx, dy, sign=-1,
+                   text_width=0.12, text_height=0.02, dist=0.66)
+                   
+    # Label radius
+    if label:
+        plot_label("$r$", 0, 0, blade_xy[0], blade_xy[1], text_width=0.04)
 
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
