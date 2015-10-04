@@ -189,6 +189,8 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     # Function for plotting vector labels
     def plot_label(text, x, y, dx, dy, text_width=0.09, text_height=0.03,
                    sign=-1, dist=1.0/3.0):
+        text_width *= plt.rcParams["font.size"]/12
+        text_height *= plt.rcParams["font.size"]/12
         dvec = np.array((dx, dy))
         perp_vec = rotate(dvec, np.pi/2)
         perp_vec /= mag(perp_vec)
@@ -391,7 +393,7 @@ def make_animation():
     
 
 if __name__ == "__main__":
-    set_sns(font_scale=1.5)
+    set_sns(font_scale=2)
     plt.rcParams["axes.grid"] = True
     plot_diagram(theta_deg=60, label=True)
 #    plot_all(theta_deg=360+25, tsr=2.0, full_view=True, scale=1.5)
