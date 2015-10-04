@@ -383,7 +383,7 @@ def make_frame(t):
     """Make a frame for a movie."""
     sec_per_rev = 5.0
     deg = t/sec_per_rev*360
-    return mplfig_to_npimage(plot_all(deg, scale=1.5))
+    return mplfig_to_npimage(plot_all(deg, scale=2.0))
     
     
 def make_animation(filetype="mp4", fps=30):
@@ -398,8 +398,19 @@ def make_animation(filetype="mp4", fps=30):
     
 
 if __name__ == "__main__":
+    import argparse
     set_sns(font_scale=2)
     plt.rcParams["axes.grid"] = True
-    plot_diagram(theta_deg=60, label=True)
-#    plot_all(theta_deg=360+25, tsr=2.0, full_view=True, scale=1.5)
-#    make_animation()
+    
+    parser = argparse.ArgumentParser(description="Create cross-flow turbine \
+                                     vector diagrams.")
+    parser.add_argument("create", choices=["figure", "animation"],
+                        help="Either create a static figure or animation")
+    parser.add_argument("--angle", type=float, default=60.0,
+                        help="Angle (degrees) to create figure")
+    args = parser.parse_args()
+    
+    if args.create == "figure":
+        plot_diagram(theta_deg=args.angle, label=True, axis="off")
+    elif args.create == "animation":    
+        make_animation()
