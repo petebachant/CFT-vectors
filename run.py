@@ -223,7 +223,7 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     u_infty = np.array((0, -u_infty))
     if label:
         dy = -mag(u_infty)
-        plot_label(r"$U_\infty$", x1, y1, 0, dy, text_width=0.1)
+        plot_label(r"$U_\mathrm{in}$", x1, y1, 0, dy, text_width=0.1)
              
     # Make relative velocity vector
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
