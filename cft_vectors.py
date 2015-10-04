@@ -172,7 +172,7 @@ def plot_blade_path(ax, R=0.5):
     ax.add_patch(p)
 
 
-def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
+def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
     """
     Plot blade velocity, free stream velocity, relative velocity,
     lift, and drag vectors.
@@ -189,8 +189,8 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     # Function for plotting vector labels
     def plot_label(text, x, y, dx, dy, text_width=0.09, text_height=0.03,
                    sign=-1, dist=1.0/3.0):
-        text_width *= plt.rcParams["font.size"]/12
-        text_height *= plt.rcParams["font.size"]/12
+        text_width *= plt.rcParams["font.size"]/12*6/fig.get_size_inches()[0]
+        text_height *= plt.rcParams["font.size"]/12*6/fig.get_size_inches()[1]
         dvec = np.array((dx, dy))
         perp_vec = rotate(dvec, np.pi/2)
         perp_vec /= mag(perp_vec)
@@ -333,8 +333,8 @@ def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
         ax.plot(theta, f(theta), "ok")
 
 
-def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False,
-                 axis="on", full_view=True):
+def plot_diagram(fig=None, ax=None, theta_deg=0.0, tsr=2.0, label=False, 
+                 save=False, axis="on", full_view=True):
     """Plot full vector diagram."""
     if ax is None:
         fig, ax = plt.subplots(figsize=(6, 6))
@@ -343,7 +343,7 @@ def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False,
     plot_foil(ax, c=0.3, theta_deg=theta_deg)
     plot_radius(ax, theta_deg)
     plot_center(ax)
-    plot_vectors(ax, theta_deg, tsr, label=label)
+    plot_vectors(fig, ax, theta_deg, tsr, label=label)
 
     # Figure formatting
     if full_view:  
