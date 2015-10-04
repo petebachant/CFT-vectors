@@ -193,7 +193,22 @@ def plot_vectors(ax, theta_deg=0.0, tsr=2.0, label=False):
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
              length_includes_head=True, color=dark_gray, linewidth=linewidth)
     if label:
-        ax.text(x1 + 0.01, y1 + 0.05*np.sign(y1), r"$\omega r$")
+        perp_vec = rotate((dx, dy), np.pi/2)
+        perp_vec /= mag(perp_vec)
+        text_width = 0.09
+        text_height = 0.03
+        if theta_deg > 270:
+            diag = text_height
+        else:
+            diag = np.array((text_width, text_height))
+        # Projection of text diagonal vector onto normal vector
+        proj = np.dot(diag, perp_vec)
+        sign = -1
+        if theta_deg > 180:
+            sign = 1
+        dxlab, dylab = perp_vec*(np.abs(proj) + .01)*sign
+        xlab, ylab = x1 + dx/3 + dxlab, y1 + dy/3 + dylab
+        ax.text(xlab, ylab, r"$\omega r$", multialignment="center")
     
     # Make free stream velocity vector
     y1 += u_infty
@@ -319,9 +334,9 @@ def plot_diagram(ax=None, theta_deg=0.0, tsr=2.0, label=False, save=False,
         fig.savefig("cft-vectors.pdf")
         
         
-def plot_all(theta_deg=0.0, tsr=2.0, full_view=True):
+def plot_all(theta_deg=0.0, tsr=2.0, scale=1.0, full_view=True):
     """Create diagram and plots of kinematics in a single figure."""
-    fig = plt.figure(figsize=(7.5, 4.75))
+    fig = plt.figure(figsize=(7.5*scale, 4.75*scale))
     # Draw vector diagram
     ax1 = plt.subplot2grid((3, 3), (0, 0), colspan=2, rowspan=3)
     plot_diagram(ax1, theta_deg, tsr, axis="on", full_view=full_view)
@@ -343,18 +358,19 @@ def make_frame(t):
     """Make a frame for a movie."""
     sec_per_rev = 5.0
     deg = t/sec_per_rev*360
-    return mplfig_to_npimage(plot_all(deg))
+    return mplfig_to_npimage(plot_all(deg, scale=1.5))
     
     
 def make_animation():
     """Make animation video."""
     animation = VideoClip(make_frame, duration=5.0)
-#    animation.write_videofile("figures/cft-animation.mp4", fps=30)
-    animation.write_gif("figures/cft-animation.gif", fps=15)
+    animation.write_videofile("figures/cft-animation.mp4", fps=30)
+#    animation.write_gif("figures/cft-animation.gif", fps=15)
     
 
 if __name__ == "__main__":
-    set_sns(font_scale=1.25)
+    set_sns(font_scale=1.5)
     plt.rcParams["axes.grid"] = True
-    plot_all(theta_deg=360+25, tsr=2.0, full_view=True)
-    make_animation()
+    plot_diagram(theta_deg=20, label=True)
+#    plot_all(theta_deg=360+25, tsr=2.0, full_view=True, scale=1.5)
+#    make_animation()
