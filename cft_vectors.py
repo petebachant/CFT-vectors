@@ -14,6 +14,7 @@ import seaborn as sns
 from pxl.styleplot import set_sns
 from moviepy.editor import VideoClip
 from moviepy.video.io.bindings import mplfig_to_npimage
+import os
 
 
 # Define some colors (some from the Seaborn deep palette)
@@ -189,7 +190,7 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
     # Function for plotting vector labels
     def plot_label(text, x, y, dx, dy, text_width=0.09, text_height=0.03,
                    sign=-1, dist=1.0/3.0):
-        text_width *= plt.rcParams["font.size"]/12*6/fig.get_size_inches()[0]
+        text_width *= plt.rcParams["font.size"]/12*6/fig.get_size_inches()[1]
         text_height *= plt.rcParams["font.size"]/12*6/fig.get_size_inches()[1]
         dvec = np.array((dx, dy))
         perp_vec = rotate(dvec, np.pi/2)
@@ -387,11 +388,13 @@ def make_frame(t):
     
 def make_animation(filetype="mp4", fps=30):
     """Make animation video."""
+    if not os.path.isdir("videos"):
+        os.mkdir("videos")
     animation = VideoClip(make_frame, duration=5.0)
     if "mp4" in filetype.lower():
-        animation.write_videofile("figures/cft-animation.mp4", fps=30)
+        animation.write_videofile("videos/cft-animation.mp4", fps=fps)
     elif "gif" in filetype.lower():
-        animation.write_gif("figures/cft-animation.gif", fps=15)
+        animation.write_gif("videos/cft-animation.gif", fps=fps)
     
 
 if __name__ == "__main__":
