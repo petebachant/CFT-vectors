@@ -364,7 +364,7 @@ def plot_all(theta_deg=0.0, tsr=2.0, scale=1.0, full_view=True):
     fig = plt.figure(figsize=(7.5*scale, 4.75*scale))
     # Draw vector diagram
     ax1 = plt.subplot2grid((3, 3), (0, 0), colspan=2, rowspan=3)
-    plot_diagram(ax1, theta_deg, tsr, axis="on", full_view=full_view)
+    plot_diagram(fig, ax1, theta_deg, tsr, axis="on", full_view=full_view)
     # Plot angle of attack
     ax2 = plt.subplot2grid((3, 3), (0, 2))
     plot_alpha(ax2, tsr=tsr, theta=theta_deg, alpha_ss=18, color=light_blue)
