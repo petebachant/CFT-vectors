@@ -45,8 +45,8 @@ def load_foildata():
     df["cl"] = cl
     df["cd"] = cd
     return df
-    
-    
+
+
 def lookup_foildata(alpha_deg):
     """Lookup foil characteristics at given angle of attack."""
     alpha_deg = np.asarray(alpha_deg)
@@ -58,8 +58,8 @@ def lookup_foildata(alpha_deg):
          - df.cd*np.cos(df.alpha_rad))
     cl, cd, ct = f_cl(alpha_deg), f_cd(alpha_deg), f_ct(alpha_deg)
     return {"cl": cl, "cd": cd, "ct": ct}
-    
-    
+
+
 def calc_cft_ctorque(tsr=2.0, chord=0.14, R=0.5):
     """Calculate the geometric torque coefficient for a CFT."""
     U_infty = 1.0
@@ -95,7 +95,7 @@ def mag(v):
     Return magnitude of 2-D vector (input as a tuple, list, or NumPy array).
     """
     return np.sqrt(v[0]**2 + v[1]**2)
-    
+
 
 def rotate(v, rad):
     """Rotate a 2-D vector by rad radians."""
@@ -138,7 +138,7 @@ def plot_radius(ax, theta_deg=0):
     theta_rad = np.deg2rad(theta_deg)
     x2, y2 = r*np.cos(theta_rad), r*np.sin(theta_rad)
     ax.plot((0, x2), (0, y2), "gray", linewidth=2)
-    
+
 
 def plot_center(ax, length=0.07, linewidth=1.2):
     """Plot centermark at origin."""
@@ -154,19 +154,19 @@ def make_naca_path(c=0.3, theta_deg=0.0):
     verts = np.array([rotate(v, theta_rad) for v in verts])
     p = matplotlib.path.Path(verts, closed=True)
     return p
-        
-    
+
+
 def plot_foil(ax, c=0.3, theta_deg=0.0):
     """Plot the foil shape using a matplotlib patch."""
-    p = matplotlib.patches.PathPatch(make_naca_path(c, theta_deg), 
+    p = matplotlib.patches.PathPatch(make_naca_path(c, theta_deg),
                                      facecolor="gray", linewidth=1,
                                      edgecolor="gray")
     ax.add_patch(p)
-    
+
 
 def plot_blade_path(ax, R=0.5):
     """Plot blade path as a dashed line."""
-    p = plt.Circle((0, 0), R, linestyle="dashed", edgecolor="black", 
+    p = plt.Circle((0, 0), R, linestyle="dashed", edgecolor="black",
                    facecolor="none", linewidth=1)
     ax.add_patch(p)
 
@@ -184,7 +184,7 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
     head_width = 0.04
     head_length = 0.11
     linewidth = 1.5
-    
+
     # Function for plotting vector labels
     def plot_label(text, x, y, dx, dy, text_width=0.09, text_height=0.03,
                    sign=-1, dist=1.0/3.0):
@@ -206,42 +206,42 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
         dxlab, dylab = perp_vec*(np.abs(proj) + .01)*sign
         xlab, ylab = x + dx*dist + dxlab, y + dy*dist + dylab
         ax.text(xlab, ylab, text)
-    
+
     # Make blade velocity vector
     x1, y1 = rotate((0.5, tsr*u_infty), np.deg2rad(theta_deg))
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
     blade_vel = np.array((dx, dy))
-    ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
+    ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length,
              length_includes_head=True, color=dark_gray, linewidth=linewidth)
     if label:
         plot_label(r"$\omega r$", x1, y1, dx, dy)
-    
+
     # Make free stream velocity vector
     y1 += u_infty
-    ax.arrow(x1, y1, 0, -u_infty, head_width=head_width, 
-             head_length=head_length, length_includes_head=True, 
+    ax.arrow(x1, y1, 0, -u_infty, head_width=head_width,
+             head_length=head_length, length_includes_head=True,
              color=blue, linewidth=linewidth)
     u_infty = np.array((0, -u_infty))
     if label:
         dy = -mag(u_infty)
         plot_label(r"$U_\mathrm{in}$", x1, y1, 0, dy, text_width=0.1)
-             
+
     # Make relative velocity vector
     dx, dy = np.array(blade_xy) - np.array((x1, y1))
     rel_vel = u_infty + blade_vel
     ax.plot((x1, x1 + dx), (y1, y1 + dy), lw=0)
-    ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length, 
+    ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length,
              length_includes_head=True, color=tan, linewidth=linewidth)
     if label:
-        plot_label(r"$U_\mathrm{rel}$", x1, y1, dx, dy, sign=1, 
+        plot_label(r"$U_\mathrm{rel}$", x1, y1, dx, dy, sign=1,
                    text_width=0.11)
-    
+
     # Calculate angle between blade vel and rel vel
-    alpha_deg = np.rad2deg(np.arccos(np.dot(blade_vel/mag(blade_vel), 
+    alpha_deg = np.rad2deg(np.arccos(np.dot(blade_vel/mag(blade_vel),
                                             rel_vel/mag(rel_vel))))
     if theta_deg > 180:
         alpha_deg *= -1
-    
+
     # Make drag vector
     drag_amplify = 3.0
     data = lookup_foildata(alpha_deg)
@@ -251,13 +251,13 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
     else:
         hs = 1
     dx, dy = drag*np.array((dx, dy))/mag((dx, dy))
-    ax.arrow(blade_xy[0], blade_xy[1], dx, dy, head_width=head_width*hs, 
-             head_length=head_length*hs, length_includes_head=True, color=red, 
+    ax.arrow(blade_xy[0], blade_xy[1], dx, dy, head_width=head_width*hs,
+             head_length=head_length*hs, length_includes_head=True, color=red,
              linewidth=linewidth)
     if label:
-        plot_label(r"$F_d$", blade_xy[0], blade_xy[1], dx, dy, sign=-1, 
+        plot_label(r"$F_d$", blade_xy[0], blade_xy[1], dx, dy, sign=-1,
                    dist=0.66)
-    
+
     # Make lift vector
     lift_amplify = 1.5
     lift = data["cl"]*mag(rel_vel)**2*lift_amplify
@@ -266,15 +266,15 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
         hs = 0.5
     else:
         hs = 1
-    ax.plot((blade_xy[0], blade_xy[0] + dx), (blade_xy[1], blade_xy[1] + dy), 
+    ax.plot((blade_xy[0], blade_xy[0] + dx), (blade_xy[1], blade_xy[1] + dy),
             linewidth=0)
-    ax.arrow(blade_xy[0], blade_xy[1], dx, dy, head_width=head_width*hs, 
-             head_length=head_length*hs, length_includes_head=True, 
+    ax.arrow(blade_xy[0], blade_xy[1], dx, dy, head_width=head_width*hs,
+             head_length=head_length*hs, length_includes_head=True,
              color=green, linewidth=linewidth)
     if label:
         plot_label(r"$F_l$", blade_xy[0], blade_xy[1], dx, dy, sign=-1,
                    text_width=0.12, text_height=0.02, dist=0.66)
-                   
+
     # Label radius
     if label:
         plot_label("$r$", 0, 0, blade_xy[0], blade_xy[1], text_width=0.04,
@@ -300,8 +300,8 @@ def plot_alpha(ax=None, tsr=2.0, theta=None, alpha_ss=None, **kwargs):
         ax.plot(theta, f(theta), "ok")
     if alpha_ss is not None:
         ax.hlines((alpha_ss, -alpha_ss), 0, 360, linestyles="dashed")
-        
-        
+
+
 def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
     """Plot relative velocity magnitude versus azimuthal angle."""
     theta %= 360
@@ -315,8 +315,8 @@ def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
     if theta is not None:
         f = interp1d(df.theta, df.rel_vel_mag)
         ax.plot(theta, f(theta), "ok")
-        
-        
+
+
 def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
     """Plot torque coefficient versus azimuthal angle."""
     theta %= 360
@@ -332,12 +332,12 @@ def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
         ax.plot(theta, f(theta), "ok")
 
 
-def plot_diagram(fig=None, ax=None, theta_deg=0.0, tsr=2.0, label=False, 
+def plot_diagram(fig=None, ax=None, theta_deg=0.0, tsr=2.0, label=False,
                  save=False, axis="on", full_view=True):
     """Plot full vector diagram."""
     if ax is None:
         fig, ax = plt.subplots(figsize=(6, 6))
-    
+
     plot_blade_path(ax)
     plot_foil(ax, c=0.3, theta_deg=theta_deg)
     plot_radius(ax, theta_deg)
@@ -345,18 +345,18 @@ def plot_diagram(fig=None, ax=None, theta_deg=0.0, tsr=2.0, label=False,
     plot_vectors(fig, ax, theta_deg, tsr, label=label)
 
     # Figure formatting
-    if full_view:  
+    if full_view:
         ax.set_xlim((-1, 1))
         ax.set_ylim((-1, 1))
     ax.set_aspect(1)
     ax.set_xticks([])
     ax.set_yticks([])
     ax.axis(axis)
-    
+
     if save:
-        fig.savefig("cft-vectors.pdf")
-        
-        
+        fig.savefig("figures/cft-vectors.pdf")
+
+
 def plot_all(theta_deg=0.0, tsr=2.0, scale=1.0, full_view=True):
     """Create diagram and plots of kinematics in a single figure."""
     fig = plt.figure(figsize=(7.5*scale, 4.75*scale))
@@ -372,18 +372,18 @@ def plot_all(theta_deg=0.0, tsr=2.0, scale=1.0, full_view=True):
     # Plot torque coefficient
     ax4 = plt.subplot2grid((3, 3), (2, 2))
     plot_ctorque(ax4, tsr=tsr, theta=theta_deg, color=purple)
-    
+
     fig.tight_layout()
     return fig
-    
+
 
 def make_frame(t):
     """Make a frame for a movie."""
     sec_per_rev = 5.0
     deg = t/sec_per_rev*360
     return mplfig_to_npimage(plot_all(deg, scale=2.0))
-    
-    
+
+
 def make_animation(filetype="mp4", fps=30):
     """Make animation video."""
     if not os.path.isdir("videos"):
@@ -393,23 +393,30 @@ def make_animation(filetype="mp4", fps=30):
         animation.write_videofile("videos/cft-animation.mp4", fps=fps)
     elif "gif" in filetype.lower():
         animation.write_gif("videos/cft-animation.gif", fps=fps)
-    
+
 
 if __name__ == "__main__":
     import argparse
     set_sns(font_scale=2)
     plt.rcParams["axes.grid"] = True
-    
+
     parser = argparse.ArgumentParser(description="Create cross-flow turbine \
                                      vector diagrams.")
     parser.add_argument("create", choices=["figure", "animation"],
                         help="Either create a static figure or animation")
     parser.add_argument("--angle", type=float, default=60.0,
                         help="Angle (degrees) to create figure")
+    parser.add_argument("--save", "-s", action="store_true", default=False,
+                        help="Save figure")
     args = parser.parse_args()
-    
+
+    if args.save:
+        if not os.path.isdir("figures"):
+            os.mkdir("figures")
+
     if args.create == "figure":
-        plot_diagram(theta_deg=args.angle, label=True, axis="off")
+        plot_diagram(theta_deg=args.angle, label=True, axis="off",
+                     save=args.save)
     elif args.create == "animation":
         from moviepy.editor import VideoClip
         from moviepy.video.io.bindings import mplfig_to_npimage
