@@ -402,10 +402,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Create cross-flow turbine \
                                      vector diagrams.")
-    parser.add_argument("create", choices=["figure", "animation"],
+    parser.add_argument("create", choices=["figure", "diagram", "animation"],
                         help="Either create a static figure or animation")
     parser.add_argument("--angle", type=float, default=60.0,
                         help="Angle (degrees) to create figure")
+    parser.add_argument("--show", action="store_true", default=False)
     parser.add_argument("--save", "-s", action="store_true", default=False,
                         help="Save figure")
     args = parser.parse_args()
@@ -414,10 +415,13 @@ if __name__ == "__main__":
         if not os.path.isdir("figures"):
             os.mkdir("figures")
 
-    if args.create == "figure":
+    if args.create == "diagram":
         plot_diagram(theta_deg=args.angle, label=True, axis="off",
                      save=args.save)
     elif args.create == "animation":
         from moviepy.editor import VideoClip
         from moviepy.video.io.bindings import mplfig_to_npimage
         make_animation()
+
+    if args.show:
+        plt.show()
