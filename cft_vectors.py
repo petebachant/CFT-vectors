@@ -52,10 +52,10 @@ def lookup_foildata(alpha_deg):
     alpha_deg = np.asarray(alpha_deg)
     df = load_foildata()
     df["alpha_rad"] = np.deg2rad(df.alpha_deg)
-    f_cl = interp1d(df.alpha_deg, df.cl)
-    f_cd = interp1d(df.alpha_deg, df.cd)
+    f_cl = interp1d(df.alpha_deg, df.cl, bounds_error=False)
+    f_cd = interp1d(df.alpha_deg, df.cd, bounds_error=False)
     f_ct = interp1d(df.alpha_deg, df.cl*np.sin(df.alpha_rad) \
-         - df.cd*np.cos(df.alpha_rad))
+         - df.cd*np.cos(df.alpha_rad), bounds_error=False)
     cl, cd, ct = f_cl(alpha_deg), f_cd(alpha_deg), f_ct(alpha_deg)
     return {"cl": cl, "cd": cd, "ct": ct}
 
@@ -285,7 +285,8 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
 
 def plot_alpha(ax=None, tsr=2.0, theta=None, alpha_ss=None, **kwargs):
     """Plot angle of attack versus azimuthal angle."""
-    theta %= 360
+    if theta is not None:
+        theta %= 360
     if ax is None:
         fig, ax = plt.subplots()
     df = calc_cft_ctorque(tsr=tsr)
@@ -304,7 +305,8 @@ def plot_alpha(ax=None, tsr=2.0, theta=None, alpha_ss=None, **kwargs):
 
 def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
     """Plot relative velocity magnitude versus azimuthal angle."""
-    theta %= 360
+    if theta is not None:
+        theta %= 360
     if ax is None:
         fig, ax = plt.subplots()
     df = calc_cft_ctorque(tsr=tsr)
@@ -315,6 +317,28 @@ def plot_rel_vel_mag(ax=None, tsr=2.0, theta=None, **kwargs):
     if theta is not None:
         f = interp1d(df.theta, df.rel_vel_mag)
         ax.plot(theta, f(theta), "ok")
+
+
+def plot_alpha_relvel_all(tsrs=np.arange(1.5, 6.1, 1.0), save=False):
+    """Plot angle of attack and relative velocity magnitude for a list of TSRs.
+
+    Figure will have two subplots in a single row.
+    """
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8.5, 3.25))
+    cm = plt.cm.get_cmap("Reds")
+    for tsr in tsrs:
+        color = cm(tsr/np.max(tsrs))
+        plot_alpha(ax=ax1, tsr=tsr, label=r"$\lambda = {}$".format(tsr),
+                   color=color)
+        plot_rel_vel_mag(ax=ax2, tsr=tsr, color=color)
+    [a.set_xticks(np.arange(0, 361, 60)) for a in (ax1, ax2)]
+    ax1.legend(loc=(-0.04, 1.1), ncol=len(tsrs))
+    ax1.set_ylim((-45, 45))
+    ax1.set_yticks(np.arange(-45, 46, 15))
+    ax2.set_ylabel(r"$|\vec{U}_\mathrm{rel}|/U_\infty$")
+    fig.tight_layout()
+    if save:
+        fig.savefig("figures/alpha_deg_urel_geom.pdf", bbox_inches="tight")
 
 
 def plot_ctorque(ax=None, tsr=2.0, theta=None, **kwargs):
@@ -418,6 +442,8 @@ if __name__ == "__main__":
     if args.create == "diagram":
         plot_diagram(theta_deg=args.angle, label=True, axis="off",
                      save=args.save)
+    elif args.create == "figure":
+        plot_alpha_relvel_all(save=args.save)
     elif args.create == "animation":
         from moviepy.editor import VideoClip
         from moviepy.video.io.bindings import mplfig_to_npimage
