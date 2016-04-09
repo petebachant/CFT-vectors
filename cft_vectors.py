@@ -324,7 +324,7 @@ def plot_alpha_relvel_all(tsrs=np.arange(1.5, 6.1, 1.0), save=False):
 
     Figure will have two subplots in a single row.
     """
-    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8.5, 3.25))
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(7.5, 3.0))
     cm = plt.cm.get_cmap("Reds")
     for tsr in tsrs:
         color = cm(tsr/np.max(tsrs))
@@ -332,7 +332,7 @@ def plot_alpha_relvel_all(tsrs=np.arange(1.5, 6.1, 1.0), save=False):
                    color=color)
         plot_rel_vel_mag(ax=ax2, tsr=tsr, color=color)
     [a.set_xticks(np.arange(0, 361, 60)) for a in (ax1, ax2)]
-    ax1.legend(loc=(-0.04, 1.1), ncol=len(tsrs))
+    ax1.legend(loc=(0.17, 1.1), ncol=len(tsrs))
     ax1.set_ylim((-45, 45))
     ax1.set_yticks(np.arange(-45, 46, 15))
     ax2.set_ylabel(r"$|\vec{U}_\mathrm{rel}|/U_\infty$")
@@ -421,8 +421,6 @@ def make_animation(filetype="mp4", fps=30):
 
 if __name__ == "__main__":
     import argparse
-    set_sns(font_scale=2)
-    plt.rcParams["axes.grid"] = True
 
     parser = argparse.ArgumentParser(description="Create cross-flow turbine \
                                      vector diagrams.")
@@ -440,11 +438,14 @@ if __name__ == "__main__":
             os.mkdir("figures")
 
     if args.create == "diagram":
+        set_sns(font_scale=2)
         plot_diagram(theta_deg=args.angle, label=True, axis="off",
                      save=args.save)
     elif args.create == "figure":
+        set_sns()
         plot_alpha_relvel_all(save=args.save)
     elif args.create == "animation":
+        set_sns(font_scale=2)
         from moviepy.editor import VideoClip
         from moviepy.video.io.bindings import mplfig_to_npimage
         make_animation()
