@@ -280,6 +280,23 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
         plot_label("$r$", 0, 0, blade_xy[0], blade_xy[1], text_width=0.04,
                    text_height=0.04)
 
+    # Label angle of attack
+    if label:
+        r_alpha = 0.6
+        arc = matplotlib.patches.Arc(blade_xy, r_alpha, r_alpha,
+                                     angle=theta_deg + 90 - alpha_deg,
+                                     theta1=0, theta2=alpha_deg,
+                                     linewidth=linewidth,
+                                     color="b")
+        ax.add_patch(arc)
+        arrow = matplotlib.patches.FancyArrowPatch(posA=(0, 0),
+                posB=(0.5, 0.5),
+                connectionstyle="Arc3,rad=-0.1",
+                linewidth=linewidth,
+                arrowstyle="fancy,head_length={}".format(head_length),
+                length_includes_head=True)
+        ax.add_patch(arrow)
+
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
 
