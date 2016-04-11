@@ -283,21 +283,39 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
     # Label angle of attack
     if label:
         ast = "simple,head_width={},tail_width={},head_length={}".format(
-                head_width*11, linewidth/13, head_length*11)
+                head_width*10, linewidth/14, head_length*10)
         xy = blade_xy - rel_vel/mag(rel_vel)*0.2
         ax.annotate(r"$\alpha$", xy=xy, xycoords="data",
-                    xytext=(50, 30), textcoords="offset points",
+                    xytext=(37.5, 22.5), textcoords="offset points",
                     arrowprops=dict(arrowstyle=ast,
                                     ec="none",
                                     connectionstyle="arc3,rad=0.1",
                                     color="b"))
-        xy = np.array(blade_xy) - blade_vel/mag(blade_vel)*0.2
+        xy = blade_xy - blade_vel/mag(blade_vel)*0.2
         ax.annotate("", xy=xy, xycoords="data",
                     xytext=(-15, -30), textcoords="offset points",
                     arrowprops=dict(arrowstyle=ast,
                                     ec="none",
                                     connectionstyle="arc3,rad=-0.1",
                                     color="b"))
+
+    # Label azimuthal angle
+    if label:
+        xy = np.array(blade_xy)*0.6
+        ast = "simple,head_width={},tail_width={},head_length={}".format(
+                head_width*5.5, linewidth/22, head_length*5.5)
+        ax.annotate(r"$\theta$", xy=xy, xycoords="data",
+                    xytext=(0.28, 0.12), textcoords="data",
+                    arrowprops=dict(arrowstyle=ast,
+                                    ec="none",
+                                    connectionstyle="arc3,rad=0.1",
+                                    color="k"))
+        ax.annotate("", xy=(0.41, 0), xycoords="data",
+                    xytext=(0.33, 0.12), textcoords="data",
+                    arrowprops=dict(arrowstyle=ast,
+                                    ec="none",
+                                    connectionstyle="arc3,rad=-0.1",
+                                    color="k"))
 
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
