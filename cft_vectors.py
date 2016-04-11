@@ -382,6 +382,10 @@ def plot_diagram(fig=None, ax=None, theta_deg=0.0, tsr=2.0, label=False,
         fig, ax = plt.subplots(figsize=(6, 6))
 
     plot_blade_path(ax)
+    if label:
+        # Create dashed line for x-axis
+        ax.plot((-0.5, 0.5), (0, 0), linestyle="dashed", color="k",
+                zorder=1)
     plot_foil(ax, c=0.3, theta_deg=theta_deg)
     plot_radius(ax, theta_deg)
     plot_center(ax)
