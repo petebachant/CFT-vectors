@@ -214,7 +214,7 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length,
              length_includes_head=True, color=dark_gray, linewidth=linewidth)
     if label:
-        plot_label(r"$\omega r$", x1, y1, dx, dy)
+        plot_label(r"$\omega r$", x1, y1, dx*0.5, dy*0.5)
 
     # Make free stream velocity vector
     y1 += u_infty
@@ -282,20 +282,14 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
 
     # Label angle of attack
     if label:
-        r_alpha = 0.6
-        arc = matplotlib.patches.Arc(blade_xy, r_alpha, r_alpha,
-                                     angle=theta_deg + 90 - alpha_deg,
-                                     theta1=0, theta2=alpha_deg,
-                                     linewidth=linewidth,
-                                     color="b")
-        ax.add_patch(arc)
-        arrow = matplotlib.patches.FancyArrowPatch(posA=(0, 0),
-                posB=(0.5, 0.5),
-                connectionstyle="Arc3,rad=-0.1",
-                linewidth=linewidth,
-                arrowstyle="fancy,head_length={}".format(head_length),
-                length_includes_head=True)
-        ax.add_patch(arrow)
+        ast = "simple,head_width={},tail_width={},head_length={}".format(
+                head_width*12, linewidth/12, head_length*12)
+        ax.annotate(r"$\alpha$", xy=blade_xy, xycoords="data",
+                    xytext=(50, 30), textcoords="offset points",
+                    arrowprops=dict(arrowstyle=ast,
+                                    ec="none",
+                                    connectionstyle="arc3,rad=0.1",
+                                    color="b"))
 
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
