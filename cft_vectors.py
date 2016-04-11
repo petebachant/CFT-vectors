@@ -311,7 +311,7 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
                                     connectionstyle="arc3,rad=0.1",
                                     color="k"))
         ax.annotate("", xy=(0.41, 0), xycoords="data",
-                    xytext=(0.33, 0.12), textcoords="data",
+                    xytext=(0.333, 0.12), textcoords="data",
                     arrowprops=dict(arrowstyle=ast,
                                     ec="none",
                                     connectionstyle="arc3,rad=-0.1",
