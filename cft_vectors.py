@@ -283,12 +283,20 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
     # Label angle of attack
     if label:
         ast = "simple,head_width={},tail_width={},head_length={}".format(
-                head_width*12, linewidth/12, head_length*12)
-        ax.annotate(r"$\alpha$", xy=blade_xy, xycoords="data",
+                head_width*11, linewidth/13, head_length*11)
+        xy = blade_xy - rel_vel/mag(rel_vel)*0.2
+        ax.annotate(r"$\alpha$", xy=xy, xycoords="data",
                     xytext=(50, 30), textcoords="offset points",
                     arrowprops=dict(arrowstyle=ast,
                                     ec="none",
                                     connectionstyle="arc3,rad=0.1",
+                                    color="b"))
+        xy = np.array(blade_xy) - blade_vel/mag(blade_vel)*0.2
+        ax.annotate("", xy=xy, xycoords="data",
+                    xytext=(-15, -30), textcoords="offset points",
+                    arrowprops=dict(arrowstyle=ast,
+                                    ec="none",
+                                    connectionstyle="arc3,rad=-0.1",
                                     color="b"))
 
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
