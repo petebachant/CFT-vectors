@@ -214,7 +214,7 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length,
              length_includes_head=True, color=dark_gray, linewidth=linewidth)
     if label:
-        plot_label(r"$\omega r$", x1, y1, dx*0.5, dy*0.5)
+        plot_label(r"$-\omega r$", x1, y1, dx*0.3, dy*0.5)
 
     # Make free stream velocity vector
     y1 += u_infty
