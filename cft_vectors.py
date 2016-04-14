@@ -171,7 +171,7 @@ def plot_blade_path(ax, R=0.5):
     ax.add_patch(p)
 
 
-def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
+def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, c=0.3, label=False):
     """
     Plot blade velocity, free stream velocity, relative velocity,
     lift, and drag vectors.
@@ -316,6 +316,19 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, label=False):
                                     ec="none",
                                     connectionstyle="arc3,rad=-0.1",
                                     color="k"))
+
+    # Label pitching moment
+    if label:
+        xy = np.array(blade_xy)*1.1 - blade_vel/mag(blade_vel) * c/4
+        ast = "simple,head_width={},tail_width={},head_length={}".format(
+                head_width*5.5, linewidth/22, head_length*5.5)
+        ax.annotate(r"", xy=xy, xycoords="data",
+                    xytext=(0.4, 0.4), textcoords="data",
+                    arrowprops=dict(arrowstyle=ast,
+                                    ec="none",
+                                    connectionstyle="arc3,rad=0.8",
+                                    color="k"))
+
 
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
