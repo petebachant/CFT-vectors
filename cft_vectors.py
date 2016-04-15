@@ -321,13 +321,15 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, c=0.3, label=False):
     if label:
         xy = np.array(blade_xy)*1.1 - blade_vel/mag(blade_vel) * c/4
         ast = "simple,head_width={},tail_width={},head_length={}".format(
-                head_width*5.5, linewidth/22, head_length*5.5)
+                head_width*8, linewidth/16, head_length*8)
         ax.annotate(r"", xy=xy, xycoords="data",
-                    xytext=(0.4, 0.4), textcoords="data",
+                    xytext=(25, -15), textcoords="offset points",
                     arrowprops=dict(arrowstyle=ast,
                                     ec="none",
-                                    connectionstyle="arc3,rad=0.8",
+                                    connectionstyle="arc3,rad=0.6",
                                     color="k"))
+        plot_label(r"$M$", xy[0], xy[1], 0.1, 0.1, sign=-1,
+                   dist=0.66)
 
 
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
