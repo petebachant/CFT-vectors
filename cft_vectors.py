@@ -328,9 +328,7 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, c=0.3, label=False):
                                     ec="none",
                                     connectionstyle="arc3,rad=0.6",
                                     color="k"))
-        plot_label(r"$M$", xy[0], xy[1], 0.1, 0.1, sign=-1,
-                   dist=0.66)
-
+        plot_label(r"$M$", xy[0], xy[1], 0.1, 0.1, sign=-1, dist=0.66)
 
     return {"u_infty": u_infty, "blade_vel": blade_vel, "rel_vel": rel_vel}
 
