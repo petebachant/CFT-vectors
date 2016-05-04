@@ -172,9 +172,8 @@ def plot_blade_path(ax, R=0.5):
 
 
 def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, c=0.3, label=False):
-    """
-    Plot blade velocity, free stream velocity, relative velocity,
-    lift, and drag vectors.
+    """Plot blade velocity, free stream velocity, relative velocity, lift, and
+    drag vectors.
     """
     r = 0.5
     u_infty = 0.26
@@ -214,7 +213,7 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, c=0.3, label=False):
     ax.arrow(x1, y1, dx, dy, head_width=head_width, head_length=head_length,
              length_includes_head=True, color=dark_gray, linewidth=linewidth)
     if label:
-        plot_label(r"$-\omega r$", x1, y1, dx*0.3, dy*0.5)
+        plot_label(r"$-\omega r$", x1, y1, dx*0.25, dy*0.5)
         # Make chord line vector
         x1c, y1c = np.array((x1, y1)) - np.array((dx, dy))*0.5
         x2c, y2c = np.array((x1, y1)) + np.array((dx, dy))*2
