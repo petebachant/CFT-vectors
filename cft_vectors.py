@@ -215,6 +215,11 @@ def plot_vectors(fig, ax, theta_deg=0.0, tsr=2.0, c=0.3, label=False):
              length_includes_head=True, color=dark_gray, linewidth=linewidth)
     if label:
         plot_label(r"$-\omega r$", x1, y1, dx*0.3, dy*0.5)
+        # Make chord line vector
+        x1c, y1c = np.array((x1, y1)) - np.array((dx, dy))*0.5
+        x2c, y2c = np.array((x1, y1)) + np.array((dx, dy))*2
+        ax.plot([x1c, x2c], [y1c, y2c], marker=None, color="k", linestyle="-.",
+                zorder=1)
 
     # Make free stream velocity vector
     y1 += u_infty
